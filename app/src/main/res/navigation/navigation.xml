@@ -2,17 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation"
-    app:startDestination="@id/mainActivity">
-    <activity
-        android:id="@+id/mainActivity"
-        android:name="com.example.tictactoe.MainActivity"
-        android:label="MainActivity" />
-    <activity
-        android:id="@+id/gameScreenActivity2"
-        android:name="com.example.tictactoe.GameScreenActivity"
-        android:label="activity_game_screen"
-        tools:layout="@layout/activity_game_screen" />
+    android:id="@+id/navigation">
     <fragment
         android:id="@+id/boardFragment"
         android:name="com.example.tictactoe.BoardFragment"
@@ -20,7 +10,7 @@
         tools:layout="@layout/fragment_board" />
     <fragment
         android:id="@+id/moveFragment"
-        android:name="com.example.tictactoe.MoveFragment"
+        android:name="com.example.tictactoe.MovesFragment"
         android:label="fragment_move"
-        tools:layout="@layout/fragment_move" />
+        tools:layout="@layout/fragment_moves" />
 </navigation>

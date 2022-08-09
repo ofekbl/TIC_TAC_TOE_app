@@ -2,9 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/boardFragment"
-        android:title="@string/board" />
+        android:id="@+id/boardItemId"
+        android:icon="@drawable/ic_dashboard"
+        android:title="@string/Board" />
     <item
-        android:id="@+id/movesFragment"
-        android:title="@string/moves" />
+        android:id="@+id/movesItemId"
+        android:icon="@drawable/ic_moves"
+        android:title="@string/Moves" />
 </menu>

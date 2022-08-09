@@ -7,4 +7,6 @@
     <string name="board">board</string>
     <string name="moves">moves</string>
     <string name="game_screen">game_screen</string>
+    <string name="Board">Board</string>
+    <string name="Moves">Moves</string>
 </resources>

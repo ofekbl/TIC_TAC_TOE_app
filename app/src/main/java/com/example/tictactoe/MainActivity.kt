@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 
 class MainActivity : AppCompatActivity() {
@@ -16,11 +17,11 @@ class MainActivity : AppCompatActivity() {
         val humanPlayerButtonClick = findViewById<Button>(R.id.human_player)
         val aiPlayerButtonClick = findViewById<Button>(R.id.AI_player)
         humanPlayerButtonClick.setOnClickListener {
-            val intent: Intent = Intent(this, GameScreenActivity::class.java)
+            val intent = Intent(this, GameActivity::class.java)
             startActivity(intent)
         }
         aiPlayerButtonClick.setOnClickListener{
-            val intent: Intent = Intent(this, GameScreenActivity::class.java)
+            val intent = Intent(this, GameActivity::class.java)
             startActivity(intent)
         }
     }

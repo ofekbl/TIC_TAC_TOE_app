@@ -53,6 +53,19 @@ class GameActivity : AppCompatActivity() {
             }
             true
         }
+        //getting the player type that was chosen in the main activity
+        var playerType = getIntent().getIntExtra("player type", 0)
+        println("player type is: $playerType")
+
+//        //checks which type of player should be O
+//        var playerX = HumanPlayer()
+//        var playerO: Player
+//        if (playerType == 0){
+//            playerO = HumanPlayer()
+//        }
+//        else{
+//            playerO = ComputerPlayer()
+//        }
     }
 
     private fun initBoard() {

@@ -4,17 +4,33 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
+import com.example.tictactoe.databinding.ActivityGameBinding
+import com.example.tictactoe.databinding.FragmentBoardBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import kotlinx.android.synthetic.main.activity_game.*
+import java.util.logging.XMLFormatter
 
 
 class GameActivity : AppCompatActivity() {
+
+    enum class Turn{
+        X,
+        O
+    }
+
+    private var firstTurn = Turn.X
+    private var currentTurn = Turn.X
+
+    private var boardList = mutableListOf<Button>()
+    private lateinit var binding: ActivityGameBinding
+    private lateinit var bindingBoard: FragmentBoardBinding
 
     private val movesFragment = MovesFragment()
     private val boardFragment = BoardFragment()
@@ -24,21 +40,11 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game)
+        binding = ActivityGameBinding.inflate(layoutInflater)
+        bindingBoard = FragmentBoardBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        initBoard()
 
-//        val navHostFragment =
-//            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
-//        val navController = navHostFragment.navController
-//        findViewById<BottomNavigationView>(R.id.bottom_navigation)
-//            .setupWithNavController(navController)
-//
-//    }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        val navController = findNavController(R.id.fragment_container)
-//        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
-//    }
-//}
         bottomNav = this.findViewById(R.id.bottom_navigation)
         bottomNav.setOnItemSelectedListener() {
             when(it.itemId){
@@ -49,6 +55,19 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
+    private fun initBoard() {
+        boardList.add(bindingBoard.cell1)
+        boardList.add(bindingBoard.cell2)
+        boardList.add(bindingBoard.cell3)
+        boardList.add(bindingBoard.cell4)
+        boardList.add(bindingBoard.cell5)
+        boardList.add(bindingBoard.cell6)
+        boardList.add(bindingBoard.cell7)
+        boardList.add(bindingBoard.cell8)
+        boardList.add(bindingBoard.cell9)
+
+    }
+
     private fun replaceFragment(fragment : Fragment){
         println("replace fragment: $fragment")
         if (fragment != null){
@@ -57,4 +76,6 @@ class GameActivity : AppCompatActivity() {
             transaction.commit()
         }
     }
+
+    fun boardTapped(view: android.view.View) {}
 }

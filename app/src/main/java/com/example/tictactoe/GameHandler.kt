@@ -8,7 +8,7 @@ class GameHandler {
     private val cells = Cells()
 
 
-    fun game() {
+    fun runGame() {
         turn = "X"
         Communicate.printOutputToTerminal("Hello! Welcome to tic tac toe game!")
 

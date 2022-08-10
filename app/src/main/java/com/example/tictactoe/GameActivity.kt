@@ -90,5 +90,26 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    fun boardTapped(view: android.view.View) {}
+    //onClick
+    fun boardTapped(view: android.view.View) {
+        if (view !is Button){
+            return
+        }
+        addToBoard(view)
+    }
+
+    fun addToBoard(button: Button){
+        if (button.text != ""){
+            return
+        }
+        if (currentTurn == Turn.O){
+            button.text = Turn.O.toString()
+            currentTurn = Turn.X
+        }
+
+        else if (currentTurn == Turn.X){
+            button.text = Turn.X.toString()
+            currentTurn = Turn.O
+        }
+    }
 }

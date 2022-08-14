@@ -18,10 +18,12 @@ class MainActivity : AppCompatActivity() {
         val aiPlayerButtonClick = findViewById<Button>(R.id.AI_player)
         humanPlayerButtonClick.setOnClickListener {
             val intent = Intent(this, GameActivity::class.java)
+            intent.putExtra("player type", 1)
             startActivity(intent)
         }
         aiPlayerButtonClick.setOnClickListener{
             val intent = Intent(this, GameActivity::class.java)
+            intent.putExtra("player type", 2)
             startActivity(intent)
         }
     }

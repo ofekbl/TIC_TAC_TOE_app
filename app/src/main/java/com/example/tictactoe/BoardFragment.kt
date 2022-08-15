@@ -14,7 +14,7 @@ import java.util.logging.XMLFormatter
 
 class BoardFragment : Fragment() {
 
-    private val communicator = Communicator()
+    val communicator = Communicator()
     private var visualTurn = communicator.currentTurn
 
 

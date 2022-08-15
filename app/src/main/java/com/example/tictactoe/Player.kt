@@ -1,18 +1,32 @@
 package com.example.tictactoe
 
+import android.util.Log
+
 abstract class Player {
     val gameHandler = GameHandler()
     val communicator = Communicator()
+    open var type = "player"
     open fun play(rowNum : Int, colNum : Int){}
-    open fun changeTurns(){
-        if (communicator.currentTurn == Communicator.Turn.X)
+
+    open fun changeTurns() {
+        if (communicator.currentTurn == Communicator.Turn.X){
+            Log.i(
+                "changeTurns",
+                "current turn is: ${communicator.currentTurn} after this line the change occurs"
+            )
             communicator.currentTurn = Communicator.Turn.O
+            Log.i("changeTurns", "current turn after the change is: ${communicator.currentTurn}")
+        }
         else
             communicator.currentTurn = Communicator.Turn.X
     }
 }
 
 class ComputerPlayer : Player() {
+    override var type: String = "ai"
+//        get() = super.type
+//        set(value) {}
+
      override fun play(rowNum : Int, colNum : Int){
         //computer's turn
         var randomRow = (1..3).random()
@@ -29,16 +43,23 @@ class ComputerPlayer : Player() {
         else {
             gameHandler.addToGrid(randomRow, randomColumn, communicator.currentTurn)
             changeTurns()
+
+//            Log.i("ai play", "add to gris of ai player")
+//            Log.i("ai play", "change turns")
+
         }
     }
 }
 
 class HumanPlayer : Player(){
+    override var type: String = "human"
+//        get() = super.type
+//        set(value) {}
     //override fun play() {
     override fun play(rowNum : Int, colNum : Int) {
         gameHandler.addToGrid(rowNum, colNum, communicator.currentTurn)
         changeTurns()
-    }
+}
 }
 
         //Communicate.printOutputToTerminal("Player X turn. Enter row column numbers to fix spot: ")

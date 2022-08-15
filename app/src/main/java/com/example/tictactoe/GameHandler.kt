@@ -34,6 +34,7 @@ class GameHandler {
         Log.i("Game Handler", "add to grid")
 //        if(!communicator.isTakenSpot(rowNum, columnNum)) {
         Board.gameGrid[rowNum - 1][columnNum - 1].value = currentTurn.toString()  // 1, 2 -> cell2
+
 //        }
     }
 //        for (i in 0 until 3) {

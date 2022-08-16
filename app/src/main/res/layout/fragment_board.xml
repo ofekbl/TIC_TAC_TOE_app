@@ -13,8 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Turn X"
-        android:textSize="40sp"
         android:textColor="@color/black"
+        android:textSize="40sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,76 +22,76 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="1:1"
-        android:padding="20dp"
         android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            style="@style/row">
+        <LinearLayout style="@style/row">
 
             <Button
                 android:id="@+id/cell1"
-                style="@style/column"/>
-            <View
-                style="@style/verticalLine"/>
+                style="@style/column" />
+
+            <View style="@style/verticalLine" />
+
             <Button
                 android:id="@+id/cell2"
-                style="@style/column"/>
-            <View
-                style="@style/verticalLine"/>
+                style="@style/column" />
+
+            <View style="@style/verticalLine" />
+
             <Button
                 android:id="@+id/cell3"
-                style="@style/column"/>
+                style="@style/column" />
 
         </LinearLayout>
 
-        <View
-            style="@style/horizontalLine"/>
+        <View style="@style/horizontalLine" />
 
-        <LinearLayout
-            style="@style/row"
-            >
+        <LinearLayout style="@style/row">
 
             <Button
                 android:id="@+id/cell4"
-                style="@style/column"/>
-            <View
-                style="@style/verticalLine"/>
+                style="@style/column" />
+
+            <View style="@style/verticalLine" />
+
             <Button
                 android:id="@+id/cell5"
-                style="@style/column"/>
-            <View
-                style="@style/verticalLine"/>
+                style="@style/column" />
+
+            <View style="@style/verticalLine" />
+
             <Button
                 android:id="@+id/cell6"
-                style="@style/column"/>
+                style="@style/column" />
 
         </LinearLayout>
 
-        <View
-            style="@style/horizontalLine"/>
+        <View style="@style/horizontalLine" />
 
 
-        <LinearLayout
-            style="@style/row">
+        <LinearLayout style="@style/row">
 
             <Button
                 android:id="@+id/cell7"
-                style="@style/column"/>
-            <View
-                style="@style/verticalLine"/>
+                style="@style/column" />
+
+            <View style="@style/verticalLine" />
+
             <Button
                 android:id="@+id/cell8"
-                style="@style/column"/>
-            <View
-                style="@style/verticalLine"/>
+                style="@style/column" />
+
+            <View style="@style/verticalLine" />
+
             <Button
                 android:id="@+id/cell9"
-                style="@style/column"/>
+                style="@style/column" />
 
         </LinearLayout>
 

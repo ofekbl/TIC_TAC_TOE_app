@@ -61,8 +61,8 @@ class MovesFragment : Fragment() {
 
             // This loop will create 20 Views containing
             // the image with the count of view
-            for (i in 1..20) {
-                data.add(ItemViewModel(R.drawable.ic_baseline_folder_24, "Item " + i))
+            for (i in 1..9) {
+                data.add(ItemViewModel(R.drawable.ic_baseline_history, "Move " + i))
             }
 
             // This will pass the ArrayList to our Adapter

@@ -13,8 +13,7 @@ class GameActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityGameBinding
-    private lateinit var playerO: Player
-    private val playerX: Player = HumanPlayer()
+//    private lateinit var playerO: Player
 
 
     private val movesFragment = MovesFragment()
@@ -37,16 +36,11 @@ class GameActivity : AppCompatActivity() {
         val playerType = intent.getIntExtra("player type",0)
         Log.i("Game Activity", "player type is: $playerType")
 
-        //checks which type of player should be O
-        playerO = when(playerType){
-            1-> {
-                HumanPlayer()
-            }
-            2-> {
-                ComputerPlayer()
-            }
-            else-> return
-        }
+
+
+        var bundle: Bundle = Bundle()
+        bundle.putString("playerType", "$playerType")
+        boardFragment.arguments = bundle
     }
 
 
@@ -60,18 +54,4 @@ class GameActivity : AppCompatActivity() {
                 transaction.commit()
             }
         }
-
-    //onClick
-    fun boardTapped(view: android.view.View) {
-        if (view !is Button){
-            return
-        }
-        Log.i("board tapped", "player o is of type: ${playerO.type}")
-        Log.i("board tapped", "current turn is: ${boardFragment.communicator.currentTurn}")
-        if (playerO is ComputerPlayer){
-            if (boardFragment.communicator.currentTurn == Communicator.Turn.O)
-                return
-        }
-        boardFragment.tryToAddToVisualBoard(playerX, playerO, view)
-    }
 }

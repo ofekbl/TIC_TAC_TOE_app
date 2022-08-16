@@ -2,23 +2,24 @@ package com.example.tictactoe
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.fragment.app.Fragment
 import com.example.tictactoe.databinding.FragmentBoardBinding
 import kotlinx.android.synthetic.main.fragment_board.*
-import java.util.logging.XMLFormatter
 
 
 class BoardFragment : Fragment() {
 
     val communicator = Communicator()
     private var visualTurn = communicator.currentTurn
+    private val playerX: Player = HumanPlayer()
+    lateinit var playerO: Player
 
 
-     lateinit var bindingBoard: FragmentBoardBinding
+    lateinit var bindingBoard: FragmentBoardBinding
      var boardList = mutableListOf<Button>()
 
 
@@ -32,16 +33,59 @@ class BoardFragment : Fragment() {
     }
 
     override fun onCreateView(
-
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         Log.i("Board frag", "on create view")
 
+        val playerType = arguments?.getString("playerType")
+        //checks which type of player should be O
+        playerO = when(playerType){
+            "1"-> {
+                HumanPlayer()
+            }
+            "2" -> {
+                ComputerPlayer()
+            }
+            else -> return null
+        }
+
         return inflater.inflate(R.layout.fragment_board, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<Button>(R.id.cell1).setOnClickListener {
+            doMove(it)
+        }
+        view.findViewById<Button>(R.id.cell2).setOnClickListener {
+            doMove(it)
+        }
+        view.findViewById<Button>(R.id.cell3).setOnClickListener {
+            doMove(it)
+        }
+        view.findViewById<Button>(R.id.cell4).setOnClickListener {
+            doMove(it)
+        }
+        view.findViewById<Button>(R.id.cell5).setOnClickListener {
+            doMove(it)
+        }
+        view.findViewById<Button>(R.id.cell6).setOnClickListener {
+            doMove(it)
+        }
+        view.findViewById<Button>(R.id.cell7).setOnClickListener {
+            doMove(it)
+        }
+        view.findViewById<Button>(R.id.cell8).setOnClickListener {
+            doMove(it)
+        }
+        view.findViewById<Button>(R.id.cell9).setOnClickListener {
+            doMove(it)
+        }
+
+    }
     private fun initVisualBoard() {
         Log.i("Board frag", "init visual board")
         boardList.add(bindingBoard.cell1)
@@ -115,5 +159,25 @@ class BoardFragment : Fragment() {
        spot[0] = x
        spot[1] = y
         return spot
+    }
+
+    //onClick
+//    fun boardTapped(view: View) {
+//        if (view !is Button){
+//            return
+//        }
+//        doMove()
+//        Log.i("board tapped", "player o is of type: ${playerO.type}")
+//        Log.i("board tapped", "current turn is: ${communicator.currentTurn}")
+//        if (playerO is ComputerPlayer){
+//            if (communicator.currentTurn == Communicator.Turn.O)
+//                return
+//        }
+//        tryToAddToVisualBoard(playerX, playerO, view)
+//    }
+
+    private fun doMove(cell: View){
+        var cellButton: Button = cell as Button
+        tryToAddToVisualBoard(playerX, playerO, cellButton)
     }
 }

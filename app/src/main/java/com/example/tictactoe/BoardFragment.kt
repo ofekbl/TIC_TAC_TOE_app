@@ -13,76 +13,71 @@ import kotlinx.android.synthetic.main.fragment_board.*
 
 class BoardFragment : Fragment() {
 
-    val communicator = Communicator()
-    private var visualTurn = communicator.currentTurn
-    private val playerX: Player = HumanPlayer()
-    lateinit var playerO: Player
-
-
+    private val communicator = Communicator(this)
+    var gameType = 0
     lateinit var bindingBoard: FragmentBoardBinding
-     var boardList = mutableListOf<Button>()
-
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        Log.i("Board frag", "on create")
-
-        super.onCreate(savedInstanceState)
-        bindingBoard = FragmentBoardBinding.inflate(layoutInflater)
-        initVisualBoard()
-    }
+    var boardList = mutableListOf<Button>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        bindingBoard = FragmentBoardBinding.inflate(layoutInflater)
+        initVisualBoard()
+
         // Inflate the layout for this fragment
         Log.i("Board frag", "on create view")
 
         val playerType = arguments?.getString("playerType")
         //checks which type of player should be O
-        playerO = when(playerType){
-            "1"-> {
-                HumanPlayer()
+        communicator.playerX.sign = "X"
+        when(playerType){
+            "1"-> { //human player
+                gameType =  1
+                communicator.playerO = HumanPlayer()
+                (communicator.playerO as HumanPlayer).sign = "O"
             }
-            "2" -> {
-                ComputerPlayer()
+            "2" -> { //ai player
+                gameType = 2
+                communicator.playerO = ComputerPlayer()
+                (communicator.playerO as ComputerPlayer).sign = "O"
+
             }
             else -> return null
         }
 
-        return inflater.inflate(R.layout.fragment_board, container, false)
+        return bindingBoard.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<Button>(R.id.cell1).setOnClickListener {
-            doMove(it)
+            clickEvent(it)
         }
         view.findViewById<Button>(R.id.cell2).setOnClickListener {
-            doMove(it)
+            clickEvent(it)
         }
         view.findViewById<Button>(R.id.cell3).setOnClickListener {
-            doMove(it)
+            clickEvent(it)
         }
         view.findViewById<Button>(R.id.cell4).setOnClickListener {
-            doMove(it)
+            clickEvent(it)
         }
         view.findViewById<Button>(R.id.cell5).setOnClickListener {
-            doMove(it)
+            clickEvent(it)
         }
         view.findViewById<Button>(R.id.cell6).setOnClickListener {
-            doMove(it)
+            clickEvent(it)
         }
         view.findViewById<Button>(R.id.cell7).setOnClickListener {
-            doMove(it)
+            clickEvent(it)
         }
         view.findViewById<Button>(R.id.cell8).setOnClickListener {
-            doMove(it)
+            clickEvent(it)
         }
         view.findViewById<Button>(R.id.cell9).setOnClickListener {
-            doMove(it)
+            clickEvent(it)
         }
 
     }
@@ -100,35 +95,30 @@ class BoardFragment : Fragment() {
     }
 
     //return true if spot was added, else return false
-    fun tryToAddToVisualBoard(playerX: Player, playerO: Player, button: Button) : Boolean {
-        Log.i("Board frag", "try to add to visual board")
+ //   private fun tryToAddToVisualBoard(playerX: Player, playerO: Player, button: Button) : Boolean {
+//        Log.i("Board frag", "try to add to visual board")
 
-//        communicator.initBoard(boardList)
-        val spot = convertCellToSpots(button)
-        val x = spot[0]
-        val y = spot[1]
-        if (communicator.tryToMakeAMove(playerX, playerO, x, y)) {
-            Log.i("Board frag tryTO...", "current turn is: ${communicator.currentTurn}")
-//            comment out because this checks if isTakenSpot, tryToMakeAMove is checking it,
-//            if (button.text != "") {
-//                return
-//            }
-            //button.text = communicator.currentTurn.toString()
+//        val spot = convertCellToSpots(button)
+//        val x = spot[0]
+//        val y = spot[1]
+       // if (communicator.tryToMakeAMove(playerX, playerO, x, y)) {
+ //           Log.i("Board frag tryTO...", "current turn is: ${communicator.currentTurn}")
 
             //return true
-            if (visualTurn == Communicator.Turn.X) {
-                button.text = Communicator.Turn.X.toString()
-                visualTurn = Communicator.Turn.O
-                return true
-            } else {
-                button.text = Communicator.Turn.O.toString() //adds to visual board
-                visualTurn = Communicator.Turn.X
-                //communicator.currentTurn = Communicator.Turn.O //changes currTurn
-                return true
-            }
-        }
-        return false
-    }
+//            if (visualTurn == Communicator.Turn.X) {
+//                button.text = Communicator.Turn.X.toString()
+//                visualTurn = Communicator.Turn.O
+//                bindingBoard.turnLabel.text = Communicator.Turn.O.toString()
+//                return true
+//            } else {
+//                button.text = Communicator.Turn.O.toString() //adds to visual board
+//                visualTurn = Communicator.Turn.X
+//                bindingBoard.turnLabel.text = Communicator.Turn.X.toString()
+//                return true
+//            }
+//        }
+//        return false
+
 
     private fun convertCellToSpots(cell: Button) : Array<Int> {
         Log.i("Board frag", "convert to spots")
@@ -161,23 +151,67 @@ class BoardFragment : Fragment() {
         return spot
     }
 
-    //onClick
-//    fun boardTapped(view: View) {
-//        if (view !is Button){
-//            return
-//        }
-//        doMove()
-//        Log.i("board tapped", "player o is of type: ${playerO.type}")
-//        Log.i("board tapped", "current turn is: ${communicator.currentTurn}")
-//        if (playerO is ComputerPlayer){
-//            if (communicator.currentTurn == Communicator.Turn.O)
-//                return
-//        }
-//        tryToAddToVisualBoard(playerX, playerO, view)
-//    }
+    fun convertSpotToCell (x: Int, y: Int) : Button{
+       lateinit var button: Button
+       Log.i("convertSpotToCell", "entered with $x $y")
+       when(Pair(x, y)){
+           Pair(1, 1) -> {button = bindingBoard.cell1}
+           Pair(1, 2) -> {button = bindingBoard.cell2}
+           Pair(1, 3) -> {button = bindingBoard.cell3}
+           Pair(2, 1) -> {button = bindingBoard.cell4}
+           Pair(2, 2) -> {button = bindingBoard.cell5}
+           Pair(2, 3) -> {button = bindingBoard.cell6}
+           Pair(3, 1) -> {button = bindingBoard.cell7}
+           Pair(3, 2) -> {button = bindingBoard.cell8}
+           Pair(3, 3) -> {button = bindingBoard.cell9}
+       }
+        return button
+    }
 
-    private fun doMove(cell: View){
-        var cellButton: Button = cell as Button
-        tryToAddToVisualBoard(playerX, playerO, cellButton)
+    fun setCell(x: Int, y: Int, playerSign: String){
+        val button = convertSpotToCell(x, y)
+        button.text = playerSign
+        bindingBoard.turnLabel.text = "Turn $playerSign"
+        Log.i("setCell", "turnLabel should be $playerSign")
+
+//        if (playerSign == Communicator.Turn.X.toString()) {
+//            button.text = playerSign
+//            //visualTurn = Communicator.Turn.O
+//            bindingBoard.turnLabel.text = Communicator.Turn.O.toString()
+//        } else {
+//            button.text = Communicator.Turn.O.toString() //adds to visual board
+//            visualTurn = Communicator.Turn.X
+//            bindingBoard.turnLabel.text = Communicator.Turn.X.toString()
+//        }
+
+    }
+
+    fun setTurnLabel(sign: String){
+        bindingBoard.turnLabel.text = "$sign"
+    }
+
+    private fun clickEvent(cell: View){
+        val cellButton: Button = cell as Button
+        val spot = convertCellToSpots(cellButton)
+        communicator.tryToMakeAMove(spot[0], spot[1])
+    }
+
+    private fun resetGrid(){
+        for (i in 1..9){
+            Board.cell1.value = "-"
+            Board.cell2.value = "-"
+            Board.cell3.value = "-"
+            Board.cell4.value = "-"
+            Board.cell5.value = "-"
+            Board.cell6.value = "-"
+            Board.cell7.value = "-"
+            Board.cell8.value = "-"
+            Board.cell9.value = "-"
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        resetGrid()
     }
 }

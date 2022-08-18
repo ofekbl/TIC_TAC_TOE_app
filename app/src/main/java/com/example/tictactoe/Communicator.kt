@@ -3,9 +3,8 @@ package com.example.tictactoe
 import android.util.Log
 import android.widget.Button
 
-class Communicator {
-//      private val gameHandler = GameHandler()
-//      val boardFragment = BoardFragment()
+class Communicator(boardFragment: BoardFragment) {
+    var boardFragment = boardFragment
 
     enum class Turn{
         X,
@@ -13,39 +12,64 @@ class Communicator {
     }
 
     var firstTurn = Turn.X
-    var currentTurn = Turn.X
-    var winner = firstTurn
+    var currentTurn = firstTurn
+    lateinit var winner : String
+    lateinit var playerO: Player
+    var playerX = HumanPlayer()
+    private var currentPlayer : Player = playerX
     private val cells = Cells()
 
+     fun changeTurns() {
+        if (currentTurn == Turn.X){
+            currentTurn = Turn.O
+        }
+        else {
+            currentTurn = Turn.X
+        }
+    }
 
-    fun tryToMakeAMove(playerX: Player, playerO: Player, x: Int, y: Int) : Boolean {
+    private fun changeCurrentPlayer(){
+        if (currentPlayer == playerO)
+            currentPlayer = playerX
+        else
+            currentPlayer = playerO
+    }
+
+    fun tryToMakeAMove(x: Int, y: Int) {
         Log.i("Communicator", "try to make a move")
 
         if (!isTakenSpot(x, y)) {
-            if (!isGameOver()){
-                if (currentTurn.toString() == "X"){
-                    playerX.play(x, y)
+            if (!isGameOver()) {
+                if(currentPlayer is HumanPlayer) {
+                    Log.i("tryToMakeAMove", "if currentPlayer is human")
+                    currentPlayer.play(x, y)
+                    boardFragment.setCell(x, y, currentPlayer.sign)
+                    changeCurrentPlayer()
+                    boardFragment.setTurnLabel("Turn ${currentPlayer.sign}")
+                    changeTurns()
                 }
-                else{
-                    playerO.play(x, y)
+                if (boardFragment.gameType == 2) { //AI
+                    val spot = (playerO as ComputerPlayer).play()
+                    val randomRow = spot[0]
+                    val randomCol = spot[1]
+                    boardFragment.setCell(randomRow, randomCol, currentPlayer.sign)
+                    changeCurrentPlayer()
+                    boardFragment.setTurnLabel("Turn ${currentPlayer.sign}")
+                    changeTurns()
                 }
-                return true
             }
-            return false
         }
-        return false
     }
-
 
     private fun isGameOver(): Boolean {
         Log.i("Communicator", "is game over")
 
         if (Column.isFull() or Row.isFull() or Diagonal.isFull()) {
-            winner = currentTurn
+            winner = currentPlayer.sig
             return true
         }
         else if(cells.isFull()){
-            winner = currentTurn
+            winner = currentPlayer.sign
             return true
         }
         return false
@@ -59,10 +83,4 @@ class Communicator {
         }
         return false
     }
-
-//    fun initBoard(boardList: List<Button>){
-//        var cell1 = boardList[0].text
-//        println("Cell1 is: $cell1")
-//    }
-
 }

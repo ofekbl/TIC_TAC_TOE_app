@@ -9,7 +9,7 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:id="@+id/turn_label"
+        android:id="@+id/turnLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Turn X"

@@ -13,8 +13,6 @@ class GameActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityGameBinding
-//    private lateinit var playerO: Player
-
 
     private val movesFragment = MovesFragment()
     private val boardFragment = BoardFragment()
@@ -33,25 +31,20 @@ class GameActivity : AppCompatActivity() {
             true
         }
         //getting the player type that was chosen in the main activity
-        val playerType = intent.getIntExtra("player type",0)
+        val playerType = intent.getIntExtra("player type",1)
         Log.i("Game Activity", "player type is: $playerType")
 
-
-
-        var bundle: Bundle = Bundle()
+        val bundle: Bundle = Bundle()
         bundle.putString("playerType", "$playerType")
         boardFragment.arguments = bundle
     }
 
-
-
-
-        private fun replaceFragment(fragment: Fragment) {
-            Log.i("Game Activity", "replace fragment: $fragment")
-            if (fragment != null) {
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, fragment)
-                transaction.commit()
-            }
+    private fun replaceFragment(fragment: Fragment) {
+        Log.i("Game Activity", "replace fragment: $fragment")
+        if (fragment != null) {
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, fragment)
+            transaction.commit()
         }
+    }
 }

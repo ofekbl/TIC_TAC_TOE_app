@@ -20,6 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/grid"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -96,5 +97,16 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/suggest_move_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Suggest Move"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grid"
+        app:layout_constraintBottom_toBottomOf="parent"
+         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

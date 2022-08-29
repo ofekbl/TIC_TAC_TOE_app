@@ -193,7 +193,9 @@ class BoardFragment : Fragment() {
     private fun clickEvent(cell: View){
         val cellButton: Button = cell as Button
         val spot = convertCellToSpots(cellButton)
-        communicator.tryToMakeAMove(spot[0], spot[1])
+        val x = spot[0]
+        val y = spot[1]
+        communicator.tryToMakeAMove(x, y)
     }
 
     private fun resetGrid(){

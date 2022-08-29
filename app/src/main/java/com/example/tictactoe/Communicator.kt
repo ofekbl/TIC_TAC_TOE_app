@@ -65,7 +65,7 @@ class Communicator(boardFragment: BoardFragment) {
         Log.i("Communicator", "is game over")
 
         if (Column.isFull() or Row.isFull() or Diagonal.isFull()) {
-            winner = currentPlayer.sig
+            winner = currentPlayer.sign
             return true
         }
         else if(cells.isFull()){

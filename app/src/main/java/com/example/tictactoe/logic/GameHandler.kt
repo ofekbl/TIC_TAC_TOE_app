@@ -1,4 +1,4 @@
-package com.example.tictactoe.presentation
+package com.example.tictactoe.logic
 
 import android.util.Log
 import com.example.tictactoe.logic.Board

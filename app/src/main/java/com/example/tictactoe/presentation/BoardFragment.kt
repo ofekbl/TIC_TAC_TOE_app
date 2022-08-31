@@ -145,20 +145,33 @@ class BoardFragment : Fragment() {
 
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun suggestMove(click: View){
-        val suggesterApi = RetrofitHelper.getInstance().create(SuggesterApi::class.java)
-        if (!ConnectivityUtils.checkConnectivity(activity as Context)){
-            activity?.runOnUiThread(java.lang.Runnable {
-                Toast.makeText(activity, "Not available. There is no network.", Toast.LENGTH_LONG).show()
-            })
-        }
-        GlobalScope.launch {
-            val result = suggesterApi.getBestMove(communicator.gridToString(), communicator.currentTurn.toString())
-            if (result != null) {
-                Log.d("ayush", result.body().toString())
+    fun suggestMove(click: View) {
+        if (!communicator.isGameOver()) {
+            val suggesterApi = RetrofitHelper.getInstance().create(SuggesterApi::class.java)
+            if (!ConnectivityUtils.checkConnectivity(activity as Context)) {
                 activity?.runOnUiThread(java.lang.Runnable {
-                    Toast.makeText(activity, "Next best move is: ${result.body()?.recommendation?.plus(1)}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        activity,
+                        "Not available. There is no network.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 })
+            }
+            GlobalScope.launch {
+                val result = suggesterApi.getBestMove(
+                    communicator.gridToString(),
+                    communicator.currentTurn.toString()
+                )
+                if (result != null) {
+                    Log.d("ayush", result.body().toString())
+                    activity?.runOnUiThread(java.lang.Runnable {
+                        Toast.makeText(
+                            activity,
+                            "Next best move is: ${result.body()?.recommendation?.plus(1)}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    })
+                }
             }
         }
     }

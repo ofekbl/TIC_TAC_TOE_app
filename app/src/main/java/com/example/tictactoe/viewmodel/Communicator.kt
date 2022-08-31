@@ -67,7 +67,7 @@ class Communicator(boardFragment: BoardFragment) {
         }
     }
 
-    private fun isGameOver(): Boolean {
+     fun isGameOver(): Boolean {
         Log.i("Communicator", "is game over")
 
         if (Column.isFull() or Row.isFull() or Diagonal.isFull()) {

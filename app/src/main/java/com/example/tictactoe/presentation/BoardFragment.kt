@@ -1,6 +1,7 @@
 package com.example.tictactoe.presentation
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.example.tictactoe.*
 import com.example.tictactoe.databinding.FragmentBoardBinding
@@ -57,6 +59,7 @@ class BoardFragment : Fragment() {
         return bindingBoard.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -98,6 +101,7 @@ class BoardFragment : Fragment() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun suggestMove(click: View){
         val suggesterApi = RetrofitHelper.getInstance().create(SuggesterApi::class.java)
         if (!ConnectivityUtils.checkConnectivity(activity as Context)){
@@ -106,7 +110,7 @@ class BoardFragment : Fragment() {
             })
         }
         GlobalScope.launch {
-            val result = suggesterApi.getBestMove(Board.gridString, communicator.currentTurn.toString())
+            val result = suggesterApi.getBestMove(communicator.gridToString(), communicator.currentTurn.toString())
             if (result != null) {
                 Log.d("ayush", result.body().toString())
                 activity?.runOnUiThread(java.lang.Runnable {
@@ -215,5 +219,9 @@ class BoardFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         resetGrid()
+    }
+
+    fun showGameOverPopUp(){
+        toast("Game over! Winner is ${communicator.winner}")
     }
 }

@@ -13,6 +13,4 @@ object Board {
 
 
     var gameGrid = arrayOf(arrayOf(cell1, cell2, cell3), arrayOf(cell4, cell5, cell6), arrayOf(cell7, cell8, cell9))
-
-    var gridString = "${cell1.value}${cell2.value}${cell3.value}${cell4.value}${cell5.value}${cell6.value}${cell7.value}${cell8.value}${cell9.value}"
 }

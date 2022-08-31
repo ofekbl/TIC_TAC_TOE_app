@@ -15,7 +15,7 @@ class Communicator(boardFragment: BoardFragment) {
 
     var firstTurn = Turn.X
     var currentTurn = firstTurn
-    lateinit var winner : String
+    var winner : String = "No one"
     lateinit var playerO: Player
     var playerX = HumanPlayer()
     private var currentPlayer : Player = playerX
@@ -51,13 +51,15 @@ class Communicator(boardFragment: BoardFragment) {
                     changeTurns()
                 }
                 if (boardFragment.gameType == 2) { //AI
-                    val spot = (playerO as ComputerPlayer).play()
-                    val randomRow = spot[0]
-                    val randomCol = spot[1]
-                    boardFragment.setCell(randomRow, randomCol, currentPlayer.sign)
-                    changeCurrentPlayer()
-                    boardFragment.setTurnLabel("Turn ${currentPlayer.sign}")
-                    changeTurns()
+                    if (!isGameOver()) {
+                        val spot = (playerO as ComputerPlayer).play()
+                        val randomRow = spot[0]
+                        val randomCol = spot[1]
+                        boardFragment.setCell(randomRow, randomCol, currentPlayer.sign)
+                        changeCurrentPlayer()
+                        boardFragment.setTurnLabel("Turn ${currentPlayer.sign}")
+                        changeTurns()
+                    }
                 }
             }
         }
@@ -67,10 +69,18 @@ class Communicator(boardFragment: BoardFragment) {
         Log.i("Communicator", "is game over")
 
         if (Column.isFull() or Row.isFull() or Diagonal.isFull()) {
-            winner = currentPlayer.sign
+            if (currentPlayer.sign == "X")
+                winner = "O"
+            else
+                winner = "X"
+            boardFragment.showGameOverPopUp()
             return true
         }
         else if(cells.isFull()){
+            if (currentPlayer.sign == "X")
+                winner = "O"
+            else
+                winner = "X"
             winner = currentPlayer.sign
             return true
         }
@@ -84,5 +94,9 @@ class Communicator(boardFragment: BoardFragment) {
             return true
         }
         return false
+    }
+
+    fun gridToString(): String {
+        return "${Board.cell1.value}${Board.cell2.value}${Board.cell3.value}${Board.cell4.value}${Board.cell5.value}${Board.cell6.value}${Board.cell7.value}${Board.cell8.value}${Board.cell9.value}"
     }
 }

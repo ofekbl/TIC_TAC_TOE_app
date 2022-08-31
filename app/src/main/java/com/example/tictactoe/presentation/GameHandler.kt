@@ -2,6 +2,7 @@ package com.example.tictactoe.presentation
 
 import android.util.Log
 import com.example.tictactoe.logic.Board
+import com.example.tictactoe.logic.Cell
 
 class GameHandler {
 
@@ -10,6 +11,7 @@ class GameHandler {
     fun addToGrid(rowNum : Int, columnNum: Int, playerSign: String) {
         Log.i("Game Handler", "add to grid")
         Board.gameGrid[rowNum - 1][columnNum - 1].value = playerSign  // 1, 2 -> cell2
+        Log.i("addToGrid", "${Board.gameGrid}")
     }
 
     fun isTakenSpot(rowNum : Int, colNum: Int) : Boolean {

@@ -1,6 +1,7 @@
-package com.example.tictactoe
+package com.example.tictactoe.presentation
 
 import android.util.Log
+import com.example.tictactoe.logic.Board
 
 class GameHandler {
 

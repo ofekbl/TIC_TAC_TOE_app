@@ -1,4 +1,4 @@
-package com.example.tictactoe
+package com.example.tictactoe.presentation
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.tictactoe.R
 import com.example.tictactoe.databinding.FragmentMovesBinding
 import kotlinx.android.synthetic.main.fragment_moves.*
 

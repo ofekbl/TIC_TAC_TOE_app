@@ -1,7 +1,9 @@
-package com.example.tictactoe
+package com.example.tictactoe.viewmodel
 
 import android.util.Log
-import android.widget.Button
+import com.example.tictactoe.*
+import com.example.tictactoe.logic.Board
+import com.example.tictactoe.presentation.BoardFragment
 
 class Communicator(boardFragment: BoardFragment) {
     var boardFragment = boardFragment

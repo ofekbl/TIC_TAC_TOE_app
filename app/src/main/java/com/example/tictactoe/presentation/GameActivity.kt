@@ -1,12 +1,12 @@
-package com.example.tictactoe
+package com.example.tictactoe.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.view.View
 import androidx.fragment.app.Fragment
+import com.example.tictactoe.R
 import com.example.tictactoe.databinding.ActivityGameBinding
-import kotlinx.android.synthetic.main.activity_main.*
 
 
 class GameActivity : AppCompatActivity() {
@@ -46,5 +46,15 @@ class GameActivity : AppCompatActivity() {
             transaction.replace(R.id.fragment_container, fragment)
             transaction.commit()
         }
+    }
+
+    fun showSuggestedMove(click: View){
+//        var message = "message"
+//        var uid = "123456" //I wanted to use it as int, but mapOf didn't allow me
+//        var token = "token"
+//        val payload = mapOf("token" to token, "user_id" to uid, "message" to message)
+//        get("https://some.api.com/method/some.method", params=payload)
+//        val popup = Toast.makeText(this,"Message sent!", Toast.LENGTH_LONG)
+//        popup.show()
     }
 }

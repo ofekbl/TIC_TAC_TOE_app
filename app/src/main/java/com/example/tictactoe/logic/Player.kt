@@ -1,6 +1,7 @@
 package com.example.tictactoe
 
 import android.util.Log
+import com.example.tictactoe.presentation.GameHandler
 
 abstract class Player {
     abstract var sign: String
@@ -31,12 +32,11 @@ class ComputerPlayer : Player() {
         } while (gameHandler.isTakenSpot(randomRow, randomColumn))
     }
 
-    else {
         gameHandler.addToGrid(randomRow, randomColumn, sign)
         spot[0] = randomRow
         spot[1] = randomColumn
         Log.i("PLay AI", "chosen AI spot is ${spot[0]}, ${spot[1]}")
-    }
+
       isDone = true
       return spot
 }

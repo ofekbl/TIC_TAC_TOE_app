@@ -1,15 +1,24 @@
-package com.example.tictactoe
+package com.example.tictactoe.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.tictactoe.*
 import com.example.tictactoe.databinding.FragmentBoardBinding
+import com.example.tictactoe.logic.Board
+import com.example.tictactoe.logic.ConnectivityUtils
+import com.example.tictactoe.logic.RetrofitHelper
+import com.example.tictactoe.logic.SuggesterApi
+import com.example.tictactoe.viewmodel.Communicator
 import kotlinx.android.synthetic.main.fragment_board.*
-
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class BoardFragment : Fragment() {
 
@@ -45,7 +54,6 @@ class BoardFragment : Fragment() {
             }
             else -> return null
         }
-
         return bindingBoard.root
     }
 
@@ -79,8 +87,37 @@ class BoardFragment : Fragment() {
         view.findViewById<Button>(R.id.cell9).setOnClickListener {
             clickEvent(it)
         }
-
+        view.findViewById<Button>(R.id.suggest_move_button).setOnClickListener {
+            suggestMove(it)
+        }
     }
+
+    fun toast(msg: String)
+    {
+        Toast.makeText(activity,msg,Toast.LENGTH_SHORT).show()
+    }
+
+
+    fun suggestMove(click: View){
+        val suggesterApi = RetrofitHelper.getInstance().create(SuggesterApi::class.java)
+        if (!ConnectivityUtils.checkConnectivity(activity as Context)){
+            activity?.runOnUiThread(java.lang.Runnable {
+                Toast.makeText(activity, "Not available. There is no network.", Toast.LENGTH_LONG).show()
+            })
+        }
+        GlobalScope.launch {
+            val result = suggesterApi.getBestMove(Board.gridString, communicator.currentTurn.toString())
+            if (result != null) {
+                Log.d("ayush", result.body().toString())
+                activity?.runOnUiThread(java.lang.Runnable {
+                    Toast.makeText(activity, "Next best move is: ${result.body()?.recommendation.toString()}", Toast.LENGTH_LONG).show()
+                })
+            }
+        }
+    }
+
+
+
     private fun initVisualBoard() {
         Log.i("Board frag", "init visual board")
         boardList.add(bindingBoard.cell1)
@@ -93,32 +130,6 @@ class BoardFragment : Fragment() {
         boardList.add(bindingBoard.cell8)
         boardList.add(bindingBoard.cell9)
     }
-
-    //return true if spot was added, else return false
- //   private fun tryToAddToVisualBoard(playerX: Player, playerO: Player, button: Button) : Boolean {
-//        Log.i("Board frag", "try to add to visual board")
-
-//        val spot = convertCellToSpots(button)
-//        val x = spot[0]
-//        val y = spot[1]
-       // if (communicator.tryToMakeAMove(playerX, playerO, x, y)) {
- //           Log.i("Board frag tryTO...", "current turn is: ${communicator.currentTurn}")
-
-            //return true
-//            if (visualTurn == Communicator.Turn.X) {
-//                button.text = Communicator.Turn.X.toString()
-//                visualTurn = Communicator.Turn.O
-//                bindingBoard.turnLabel.text = Communicator.Turn.O.toString()
-//                return true
-//            } else {
-//                button.text = Communicator.Turn.O.toString() //adds to visual board
-//                visualTurn = Communicator.Turn.X
-//                bindingBoard.turnLabel.text = Communicator.Turn.X.toString()
-//                return true
-//            }
-//        }
-//        return false
-
 
     private fun convertCellToSpots(cell: Button) : Array<Int> {
         Log.i("Board frag", "convert to spots")
@@ -173,17 +184,6 @@ class BoardFragment : Fragment() {
         button.text = playerSign
         bindingBoard.turnLabel.text = "Turn $playerSign"
         Log.i("setCell", "turnLabel should be $playerSign")
-
-//        if (playerSign == Communicator.Turn.X.toString()) {
-//            button.text = playerSign
-//            //visualTurn = Communicator.Turn.O
-//            bindingBoard.turnLabel.text = Communicator.Turn.O.toString()
-//        } else {
-//            button.text = Communicator.Turn.O.toString() //adds to visual board
-//            visualTurn = Communicator.Turn.X
-//            bindingBoard.turnLabel.text = Communicator.Turn.X.toString()
-//        }
-
     }
 
     fun setTurnLabel(sign: String){

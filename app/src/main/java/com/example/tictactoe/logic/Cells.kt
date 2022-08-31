@@ -1,6 +1,7 @@
 package com.example.tictactoe
 
 import android.util.Log
+import com.example.tictactoe.logic.Board
 
 open class Cells {
     open fun isFull() : Boolean {

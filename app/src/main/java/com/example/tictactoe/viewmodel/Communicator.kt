@@ -3,6 +3,8 @@ package com.example.tictactoe.viewmodel
 import android.util.Log
 import com.example.tictactoe.*
 import com.example.tictactoe.logic.Board
+import com.example.tictactoe.logic.Response
+import com.example.tictactoe.logic.SuggesterApi
 import com.example.tictactoe.presentation.BoardFragment
 
 class Communicator(boardFragment: BoardFragment) {

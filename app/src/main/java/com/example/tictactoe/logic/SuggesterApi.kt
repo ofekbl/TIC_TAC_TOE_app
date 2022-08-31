@@ -14,6 +14,6 @@ interface SuggesterApi {
     suspend fun getBestMove(
         @Path("game") game: String,
         @Path("player") player: String
-    ) : Response<com.example.tictactoe.logic.Response>
+    ) : Response<com.example.tictactoe.logic.Response<Any?>>
 }
 

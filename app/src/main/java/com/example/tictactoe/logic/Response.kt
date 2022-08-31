@@ -1,8 +1,6 @@
 package com.example.tictactoe.logic
 
-import java.util.function.IntToDoubleFunction
-
-data class Response(
+data class Response<T>(
     val game: String,
     val player: String,
     val recommendation: Int,

@@ -3,13 +3,17 @@ package com.example.tictactoe.presentation
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.tictactoe.*
 import com.example.tictactoe.databinding.FragmentBoardBinding
@@ -18,6 +22,7 @@ import com.example.tictactoe.logic.ConnectivityUtils
 import com.example.tictactoe.logic.RetrofitHelper
 import com.example.tictactoe.logic.SuggesterApi
 import com.example.tictactoe.viewmodel.Communicator
+import kotlinx.android.synthetic.main.card_view_design.*
 import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -25,6 +30,8 @@ import kotlinx.coroutines.launch
 class BoardFragment : Fragment() {
 
     private val communicator = Communicator(this)
+    private var progressBar : ProgressBar? = null
+    private val handler = Handler()
     var gameType = 0
     lateinit var bindingBoard: FragmentBoardBinding
     var boardList = mutableListOf<Button>()
@@ -35,6 +42,8 @@ class BoardFragment : Fragment() {
     ): View? {
         bindingBoard = FragmentBoardBinding.inflate(layoutInflater)
         initVisualBoard()
+
+        progressBar = bindingBoard.pBar
 
         // Inflate the layout for this fragment
         Log.i("Board frag", "on create view")
@@ -92,8 +101,42 @@ class BoardFragment : Fragment() {
         }
         view.findViewById<Button>(R.id.suggest_move_button).setOnClickListener {
             suggestMove(it)
+            progressBar?.visibility = View.VISIBLE
+            var i = progressBar?.progress
+            Thread(Runnable {
+                if (i != null) {
+                    while (i < 9){
+                        activity?.runOnUiThread(Runnable { markButtonDisable(it as Button)
+                        })
+                        i += 1
+                        handler.post(Runnable {
+                            progressBar?.progress = i
+                        })
+                        try {
+                            Thread.sleep(100)
+                        }
+                        catch (e: InterruptedException){
+                            e.printStackTrace()
+                        }
+                    }
+                }
+                activity?.runOnUiThread(Runnable { setButtonToEnabled(it as Button)
+                })
+                progressBar?.visibility = View.INVISIBLE
+            }).start()
         }
     }
+
+    fun markButtonDisable(button: Button){
+        button.isEnabled = false
+        button.isClickable = false
+    }
+
+    fun setButtonToEnabled(button: Button){
+        button.isEnabled = true
+        button.isClickable = true
+    }
+
 
     fun toast(msg: String)
     {
@@ -114,7 +157,7 @@ class BoardFragment : Fragment() {
             if (result != null) {
                 Log.d("ayush", result.body().toString())
                 activity?.runOnUiThread(java.lang.Runnable {
-                    Toast.makeText(activity, "Next best move is: ${result.body()?.recommendation.toString()}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "Next best move is: ${result.body()?.recommendation?.plus(1)}", Toast.LENGTH_LONG).show()
                 })
             }
         }

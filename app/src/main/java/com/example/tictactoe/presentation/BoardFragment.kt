@@ -24,6 +24,8 @@ import com.example.tictactoe.logic.SuggesterApi
 import com.example.tictactoe.viewmodel.Communicator
 import kotlinx.android.synthetic.main.card_view_design.*
 import kotlinx.android.synthetic.main.fragment_board.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -148,7 +150,10 @@ class BoardFragment : Fragment() {
     fun suggestMove(click: View) {
         if (!communicator.isGameOver()) {
             val suggesterApi = RetrofitHelper.getInstance().create(SuggesterApi::class.java)
+            Log.i("suggestMove", "next line is checking connectivity")
+
             if (!ConnectivityUtils.checkConnectivity(activity as Context)) {
+                Log.i("suggestMove", "no connectivity")
                 activity?.runOnUiThread(java.lang.Runnable {
                     Toast.makeText(
                         activity,
@@ -157,21 +162,33 @@ class BoardFragment : Fragment() {
                     ).show()
                 })
             }
+            Log.i("suggestMove", "skip no connectivity - so there is connecticiy(?)")
+
+
             GlobalScope.launch {
                 val result = suggesterApi.getBestMove(
                     communicator.gridToString(),
                     communicator.currentTurn.toString()
                 )
-                if (result != null) {
+
+                if (result.isSuccessful) { //TODO result.isScucess
                     Log.d("ayush", result.body().toString())
-                    activity?.runOnUiThread(java.lang.Runnable {
+                    val nextRecommendation = result.body()?.recommendation?.plus(1)
+
+                    launch(Dispatchers.Main) {
                         Toast.makeText(
                             activity,
-                            "Next best move is: ${result.body()?.recommendation?.plus(1)}",
+                            "Next best move is: $nextRecommendation",
                             Toast.LENGTH_LONG
                         ).show()
-                    })
+                    }
                 }
+                else
+                    Toast.makeText(
+                        activity,
+                        "Error! Check your connectivity and try again!",
+                        Toast.LENGTH_LONG
+                    ).show()
             }
         }
     }

@@ -4,19 +4,20 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 
 class ConnectivityUtils {
 
-    companion object {
-        fun checkConnectivity(): Boolean {
-            return true
-        }
+//    companion object {
+//        fun checkConnectivity(): Boolean {
+//            return true
+//        }
 
         @RequiresApi(Build.VERSION_CODES.M)
-        fun checkConnectivity(context: Context): Boolean {
-            var result = false
+
+        companion object {
+            fun checkConnectivity(context: Context): Boolean {
+            var result : Boolean
             val connectivityManager =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

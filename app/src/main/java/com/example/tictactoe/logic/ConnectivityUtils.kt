@@ -8,11 +8,6 @@ import androidx.annotation.RequiresApi
 
 class ConnectivityUtils {
 
-//    companion object {
-//        fun checkConnectivity(): Boolean {
-//            return true
-//        }
-
         @RequiresApi(Build.VERSION_CODES.M)
 
         companion object {

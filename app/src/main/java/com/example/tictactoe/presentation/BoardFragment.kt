@@ -10,11 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.tictactoe.*
 import com.example.tictactoe.databinding.FragmentBoardBinding
 import com.example.tictactoe.logic.Board
@@ -22,9 +22,7 @@ import com.example.tictactoe.logic.ConnectivityUtils
 import com.example.tictactoe.logic.RetrofitHelper
 import com.example.tictactoe.logic.SuggesterApi
 import com.example.tictactoe.viewmodel.Communicator
-import kotlinx.android.synthetic.main.card_view_design.*
 import kotlinx.android.synthetic.main.fragment_board.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -37,13 +35,20 @@ class BoardFragment : Fragment() {
     var gameType = 0
     lateinit var bindingBoard: FragmentBoardBinding
     var boardList = mutableListOf<Button>()
+    private lateinit var boardFragmentViewModel: BoardFregmentViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
         bindingBoard = FragmentBoardBinding.inflate(layoutInflater)
         initVisualBoard()
+
+        boardFragmentViewModel = ViewModelProvider(this).get(BoardFregmentViewModel::class.java)
+
 
         progressBar = bindingBoard.pBar
 
@@ -127,7 +132,13 @@ class BoardFragment : Fragment() {
                 progressBar?.visibility = View.INVISIBLE
             }).start()
         }
+        boardFragmentViewModel.currentTurn.observe(viewLifecycleOwner, Observer(::showCurrentTurn))
     }
+
+    fun showCurrentTurn(currentTurn: BoardFregmentViewModel.Turn){
+        bindingBoard.turnLabel.text = "Turn $currentTurn"
+    }
+
 
     fun markButtonDisable(button: Button){
         button.isEnabled = false
@@ -168,7 +179,7 @@ class BoardFragment : Fragment() {
             GlobalScope.launch {
                 val result = suggesterApi.getBestMove(
                     communicator.gridToString(),
-                    communicator.currentTurn.toString()
+                    boardFragmentViewModel.currentTurn.toString()
                 )
 
                 if (result.isSuccessful) { //TODO result.isScucess
@@ -295,6 +306,6 @@ class BoardFragment : Fragment() {
     }
 
     fun showGameOverPopUp(){
-        toast("Game over! Winner is ${communicator.winner}")
+        toast("Game over! Winner is ${boardFragmentViewModel.winner}")
     }
 }

@@ -13,15 +13,19 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.example.tictactoe.*
 import com.example.tictactoe.databinding.FragmentBoardBinding
 import com.example.tictactoe.logic.Board
+import com.example.tictactoe.logic.Board.cell1
+import com.example.tictactoe.logic.Board.cell7
+import com.example.tictactoe.logic.Board.cell8
+import com.example.tictactoe.logic.Board.cell9
 import com.example.tictactoe.logic.ConnectivityUtils
 import com.example.tictactoe.logic.RetrofitHelper
 import com.example.tictactoe.logic.SuggesterApi
-import com.example.tictactoe.viewmodel.Communicator
 import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -29,13 +33,12 @@ import kotlinx.coroutines.launch
 
 class BoardFragment : Fragment() {
 
-    private val communicator = Communicator(this)
-    private var progressBar : ProgressBar? = null
+    private var progressBar: ProgressBar? = null
     private val handler = Handler()
-    var gameType = 0
     lateinit var bindingBoard: FragmentBoardBinding
     var boardList = mutableListOf<Button>()
-    private lateinit var boardFragmentViewModel: BoardFregmentViewModel
+
+    private val boardFragmentViewModel: BoardFragmentViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -47,8 +50,6 @@ class BoardFragment : Fragment() {
         bindingBoard = FragmentBoardBinding.inflate(layoutInflater)
         initVisualBoard()
 
-        boardFragmentViewModel = ViewModelProvider(this).get(BoardFregmentViewModel::class.java)
-
 
         progressBar = bindingBoard.pBar
 
@@ -57,19 +58,36 @@ class BoardFragment : Fragment() {
 
         val playerType = arguments?.getString("playerType")
         //checks which type of player should be O
-        communicator.playerX.sign = "X"
-        when(playerType){
-            "1"-> { //human player
-                gameType =  1
-                communicator.playerO = HumanPlayer()
-                (communicator.playerO as HumanPlayer).sign = "O"
+
+        boardFragmentViewModel.playerX.sign = "X"
+        Log.i("Board frag", "playerX sign has set")
+        Log.i("Board frag", "playerX sign is now: ${boardFragmentViewModel.playerX.sign}")
+
+
+
+        when (playerType) {
+
+            "1" -> { //human player
+                Log.i("Board frag", "human player")
+
+                boardFragmentViewModel._gameType.value = 1
+                boardFragmentViewModel.playerO = HumanPlayer()
+                (boardFragmentViewModel.playerO as HumanPlayer).sign = "O"
+
+                Log.i("Board frag", "playerO sign has set")
+                Log.i("Board frag", "playerX sign is now: ${boardFragmentViewModel.playerO.sign}")
             }
+
+
             "2" -> { //ai player
-                gameType = 2
-                communicator.playerO = ComputerPlayer()
-                (communicator.playerO as ComputerPlayer).sign = "O"
+                boardFragmentViewModel._gameType.value = 2
+                boardFragmentViewModel.playerO = ComputerPlayer()
+                (boardFragmentViewModel.playerO as ComputerPlayer).sign = "O"
+                Log.i("Board frag", "playerO sign has set")
+                Log.i("Board frag", "playerX sign is now: ${boardFragmentViewModel.playerO.sign}")
 
             }
+
             else -> return null
         }
         return bindingBoard.root
@@ -112,8 +130,9 @@ class BoardFragment : Fragment() {
             var i = progressBar?.progress
             Thread(Runnable {
                 if (i != null) {
-                    while (i < 9){
-                        activity?.runOnUiThread(Runnable { markButtonDisable(it as Button)
+                    while (i < 9) {
+                        activity?.runOnUiThread(Runnable {
+                            markButtonDisable(it as Button)
                         })
                         i += 1
                         handler.post(Runnable {
@@ -121,45 +140,93 @@ class BoardFragment : Fragment() {
                         })
                         try {
                             Thread.sleep(100)
-                        }
-                        catch (e: InterruptedException){
+                        } catch (e: InterruptedException) {
                             e.printStackTrace()
                         }
                     }
                 }
-                activity?.runOnUiThread(Runnable { setButtonToEnabled(it as Button)
+                activity?.runOnUiThread(Runnable {
+                    setButtonToEnabled(it as Button)
                 })
                 progressBar?.visibility = View.INVISIBLE
             }).start()
         }
-        boardFragmentViewModel.currentTurn.observe(viewLifecycleOwner, Observer(::showCurrentTurn))
     }
 
-    fun showCurrentTurn(currentTurn: BoardFregmentViewModel.Turn){
+    fun showGameOverPopUp(isGameOver: Boolean) {
+        toast("Game over! Winner is ${boardFragmentViewModel.winner.value}")
+    }
+
+    fun showCurrentTurn(currentTurn: BoardFragmentViewModel.Turn) {
         bindingBoard.turnLabel.text = "Turn $currentTurn"
     }
 
 
-    fun markButtonDisable(button: Button){
+    fun markButtonDisable(button: Button) {
         button.isEnabled = false
         button.isClickable = false
     }
 
-    fun setButtonToEnabled(button: Button){
+    fun markAllButtonsDisabled(){
+        bindingBoard.cell1.isEnabled = false
+        bindingBoard.cell1.isClickable = false
+        bindingBoard.cell2.isEnabled = false
+        bindingBoard.cell2.isClickable = false
+        bindingBoard.cell3.isEnabled = false
+        bindingBoard.cell3.isClickable = false
+        bindingBoard.cell4.isEnabled = false
+        bindingBoard.cell4.isClickable = false
+        bindingBoard.cell5.isEnabled = false
+        bindingBoard.cell5.isClickable = false
+        bindingBoard.cell6.isEnabled = false
+        bindingBoard.cell6.isClickable = false
+        bindingBoard.cell7.isEnabled = false
+        bindingBoard.cell7.isClickable = false
+        bindingBoard.cell8.isEnabled = false
+        bindingBoard.cell8.isClickable = false
+        bindingBoard.cell9.isEnabled = false
+        bindingBoard.cell9.isClickable = false
+        bindingBoard.suggestMoveButton.isEnabled = false
+        bindingBoard.suggestMoveButton.isClickable = false
+    }
+
+
+    fun markAllButtonsEnabled(){
+        bindingBoard.cell1.isEnabled = true
+        bindingBoard.cell1.isClickable = true
+        bindingBoard.cell2.isEnabled = true
+        bindingBoard.cell2.isClickable = true
+        bindingBoard.cell3.isEnabled = true
+        bindingBoard.cell3.isClickable = true
+        bindingBoard.cell4.isEnabled = true
+        bindingBoard.cell4.isClickable = true
+        bindingBoard.cell5.isEnabled = true
+        bindingBoard.cell5.isClickable = true
+        bindingBoard.cell6.isEnabled = true
+        bindingBoard.cell6.isClickable = true
+        bindingBoard.cell7.isEnabled = true
+        bindingBoard.cell7.isClickable = true
+        bindingBoard.cell8.isEnabled = true
+        bindingBoard.cell8.isClickable = true
+        bindingBoard.cell9.isEnabled = true
+        bindingBoard.cell9.isClickable = true
+        bindingBoard.suggestMoveButton.isEnabled = true
+        bindingBoard.suggestMoveButton.isClickable = true
+    }
+
+    fun setButtonToEnabled(button: Button) {
         button.isEnabled = true
         button.isClickable = true
     }
 
-
-    fun toast(msg: String)
-    {
-        Toast.makeText(activity,msg,Toast.LENGTH_SHORT).show()
+    fun toast(msg: String) {
+        Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show()
     }
 
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun suggestMove(click: View) {
-        if (!communicator.isGameOver()) {
+        if (!boardFragmentViewModel.isGameOver()) {
             val suggesterApi = RetrofitHelper.getInstance().create(SuggesterApi::class.java)
             Log.i("suggestMove", "next line is checking connectivity")
 
@@ -178,7 +245,7 @@ class BoardFragment : Fragment() {
 
             GlobalScope.launch {
                 val result = suggesterApi.getBestMove(
-                    communicator.gridToString(),
+                    boardFragmentViewModel.gridToString(),
                     boardFragmentViewModel.currentTurn.toString()
                 )
 
@@ -193,8 +260,7 @@ class BoardFragment : Fragment() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
-                }
-                else
+                } else
                     Toast.makeText(
                         activity,
                         "Error! Check your connectivity and try again!",
@@ -203,7 +269,6 @@ class BoardFragment : Fragment() {
             }
         }
     }
-
 
 
     private fun initVisualBoard() {
@@ -219,75 +284,124 @@ class BoardFragment : Fragment() {
         boardList.add(bindingBoard.cell9)
     }
 
-    private fun convertCellToSpots(cell: Button) : Array<Int> {
+    private fun convertCellToSpots(cell: Button): Array<Int> {
         Log.i("Board frag", "convert to spots")
 
         var x = 0
         var y = 0
         val spot = arrayOf(0, 0)
-        when(cell){
-            cell1 -> {x = 1
-                y = 1}
-            cell2 -> {x = 1
-                y = 2}
-            cell3 -> {x = 1
-                y = 3}
-            cell4 -> {x = 2
-                y = 1}
-            cell5 -> {x = 2
-                y = 2}
-            cell6 -> {x = 2
-                y = 3}
-            cell7 -> {x = 3
-                y = 1}
-            cell8 -> {x = 3
-                y = 2}
-            cell9 -> {x = 3
-                y = 3}
+        when (cell) {
+            cell1 -> {
+                x = 1
+                y = 1
+            }
+            cell2 -> {
+                x = 1
+                y = 2
+            }
+            cell3 -> {
+                x = 1
+                y = 3
+            }
+            cell4 -> {
+                x = 2
+                y = 1
+            }
+            cell5 -> {
+                x = 2
+                y = 2
+            }
+            cell6 -> {
+                x = 2
+                y = 3
+            }
+            cell7 -> {
+                x = 3
+                y = 1
+            }
+            cell8 -> {
+                x = 3
+                y = 2
+            }
+            cell9 -> {
+                x = 3
+                y = 3
+            }
         }
-       spot[0] = x
-       spot[1] = y
+        spot[0] = x
+        spot[1] = y
         return spot
     }
 
-    fun convertSpotToCell (x: Int, y: Int) : Button{
-       lateinit var button: Button
-       Log.i("convertSpotToCell", "entered with $x $y")
-       when(Pair(x, y)){
-           Pair(1, 1) -> {button = bindingBoard.cell1}
-           Pair(1, 2) -> {button = bindingBoard.cell2}
-           Pair(1, 3) -> {button = bindingBoard.cell3}
-           Pair(2, 1) -> {button = bindingBoard.cell4}
-           Pair(2, 2) -> {button = bindingBoard.cell5}
-           Pair(2, 3) -> {button = bindingBoard.cell6}
-           Pair(3, 1) -> {button = bindingBoard.cell7}
-           Pair(3, 2) -> {button = bindingBoard.cell8}
-           Pair(3, 3) -> {button = bindingBoard.cell9}
-       }
+    fun convertSpotToCell(x: Int, y: Int): Button {
+        lateinit var button: Button
+        Log.i("convertSpotToCell", "entered with $x $y")
+        when (Pair(x, y)) {
+            Pair(1, 1) -> {
+                button = bindingBoard.cell1
+            }
+            Pair(1, 2) -> {
+                button = bindingBoard.cell2
+            }
+            Pair(1, 3) -> {
+                button = bindingBoard.cell3
+            }
+            Pair(2, 1) -> {
+                button = bindingBoard.cell4
+            }
+            Pair(2, 2) -> {
+                button = bindingBoard.cell5
+            }
+            Pair(2, 3) -> {
+                button = bindingBoard.cell6
+            }
+            Pair(3, 1) -> {
+                button = bindingBoard.cell7
+            }
+            Pair(3, 2) -> {
+                button = bindingBoard.cell8
+            }
+            Pair(3, 3) -> {
+                button = bindingBoard.cell9
+            }
+        }
         return button
     }
 
-    fun setCell(x: Int, y: Int, playerSign: String){
+
+    private fun clickEvent(cell: View) {
+        val cellButton: Button = cell as Button
+        val spot = convertCellToSpots(cellButton)
+        val x = spot[0]
+        val y = spot[1]
+
+        boardFragmentViewModel.tryToMakeAMove(x, y)?.observe(viewLifecycleOwner) {
+            if (it.valid) {
+                setCell(it.x, it.y, it.sign)
+                setTurnLabel(it.sign)
+                boardFragmentViewModel.currentTurn.observe(viewLifecycleOwner, Observer(::showCurrentTurn))
+            }
+            if (boardFragmentViewModel.isGameOver()){
+                markAllButtonsDisabled()
+                boardFragmentViewModel.isGameOver.observe(viewLifecycleOwner, Observer(::showGameOverPopUp))
+            }
+        }
+    }
+
+    fun setTurnLabel(sign: String?) {
+        bindingBoard.turnLabel.text = "$sign"
+    }
+
+    fun setCell(x: Int, y: Int, playerSign: String?) {
         val button = convertSpotToCell(x, y)
         button.text = playerSign
         bindingBoard.turnLabel.text = "Turn $playerSign"
         Log.i("setCell", "turnLabel should be $playerSign")
     }
 
-    fun setTurnLabel(sign: String){
-        bindingBoard.turnLabel.text = "$sign"
-    }
 
-    private fun clickEvent(cell: View){
-        val cellButton: Button = cell as Button
-        val spot = convertCellToSpots(cellButton)
-        val x = spot[0]
-        val y = spot[1]
-        communicator.tryToMakeAMove(x, y)
-    }
-
-    private fun resetGrid(){
-        for (i in 1..9){
+    private fun resetGrid() {
+        for (i in 1..9) {
             Board.cell1.value = "-"
             Board.cell2.value = "-"
             Board.cell3.value = "-"
@@ -303,9 +417,8 @@ class BoardFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         resetGrid()
+        markAllButtonsEnabled()
     }
 
-    fun showGameOverPopUp(){
-        toast("Game over! Winner is ${boardFragmentViewModel.winner}")
-    }
+
 }

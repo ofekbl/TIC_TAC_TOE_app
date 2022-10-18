@@ -261,11 +261,13 @@ class BoardFragment : Fragment() {
                         ).show()
                     }
                 } else
-                    Toast.makeText(
-                        activity,
-                        "Error! Check your connectivity and try again!",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    launch(Dispatchers.Main) {
+                        Toast.makeText(
+                            activity,
+                            "Error! Check your connectivity and try again!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
             }
         }
     }

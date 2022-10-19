@@ -157,10 +157,9 @@ class BoardFragment : Fragment() {
         toast("Game over! Winner is ${boardFragmentViewModel.winner.value}")
     }
 
-    fun showCurrentTurn(currentTurn: BoardFragmentViewModel.Turn) {
-        bindingBoard.turnLabel.text = "Turn $currentTurn"
+    fun setTurnLabel(sign: String?) {
+        bindingBoard.turnLabel.text = "$sign"
     }
-
 
     fun markButtonDisable(button: Button) {
         button.isEnabled = false
@@ -379,9 +378,15 @@ class BoardFragment : Fragment() {
 
         boardFragmentViewModel.tryToMakeAMove(x, y)?.observe(viewLifecycleOwner) {
             if (it.valid) {
+                Log.i("clickEvent", "line before the setCell")
                 setCell(it.x, it.y, it.sign)
+                Log.i("clickEvent", "line after the setCell")
                 setTurnLabel(it.sign)
-                boardFragmentViewModel.currentTurn.observe(viewLifecycleOwner, Observer(::showCurrentTurn))
+                //boardFragmentViewModel.currentTurn.observe(viewLifecycleOwner, Observer(::showCurrentTurn))
+                Log.i("observe clickEvent", "line before the observe turnLabel")
+                boardFragmentViewModel.turnLabel.observe(viewLifecycleOwner, Observer(::setTurnLabel))
+                Log.i("observe clickEvent", "line after the observe turnLabel")
+
             }
             if (boardFragmentViewModel.isGameOver()){
                 markAllButtonsDisabled()
@@ -390,14 +395,12 @@ class BoardFragment : Fragment() {
         }
     }
 
-    fun setTurnLabel(sign: String?) {
-        bindingBoard.turnLabel.text = "$sign"
-    }
+
 
     fun setCell(x: Int, y: Int, playerSign: String?) {
         val button = convertSpotToCell(x, y)
         button.text = playerSign
-        bindingBoard.turnLabel.text = "Turn $playerSign"
+        //setTurnLabel("Turn $playerSign")
         Log.i("setCell", "turnLabel should be $playerSign")
     }
 

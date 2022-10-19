@@ -18,6 +18,10 @@ class BoardFragmentViewModel : ViewModel() {
     var result: LiveData<Result>? = null
         get() = _result
 
+    private val _turnLabel = MutableLiveData<String>()
+    val turnLabel: LiveData<String>
+        get() = _turnLabel
+
     private val _firstTurn = MutableLiveData<Turn>()
     val firstTurn: LiveData<Turn>
         get() = _firstTurn
@@ -54,6 +58,7 @@ class BoardFragmentViewModel : ViewModel() {
         _isGameOver.value = false
         _gameType.value = 0
         _result.value = Result(false, 0, 0, "-")
+        _turnLabel.value = "Turn X"
     }
 
 
@@ -104,6 +109,7 @@ class BoardFragmentViewModel : ViewModel() {
         else {
             _currentTurn.value = Turn.X
         }
+        _turnLabel.value = "Turn ${_currentTurn.value}"
     }
 
     data class Result(val valid: Boolean, val x: Int, val y: Int, val sign: String?)

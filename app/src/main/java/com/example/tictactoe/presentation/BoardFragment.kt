@@ -16,13 +16,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.tictactoe.*
+import com.example.tictactoe.database.GameDatabase
+import com.example.tictactoe.database.GameState
 import com.example.tictactoe.databinding.FragmentBoardBinding
 import com.example.tictactoe.logic.Board
-import com.example.tictactoe.logic.Board.cell1
-import com.example.tictactoe.logic.Board.cell7
-import com.example.tictactoe.logic.Board.cell8
-import com.example.tictactoe.logic.Board.cell9
+
 import com.example.tictactoe.logic.ConnectivityUtils
 import com.example.tictactoe.logic.RetrofitHelper
 import com.example.tictactoe.logic.SuggesterApi
@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+
 class BoardFragment : Fragment() {
 
     private var progressBar: ProgressBar? = null
@@ -38,7 +39,9 @@ class BoardFragment : Fragment() {
     lateinit var bindingBoard: FragmentBoardBinding
     var boardList = mutableListOf<Button>()
 
-    private val boardFragmentViewModel: BoardFragmentViewModel by activityViewModels()
+    private val boardFragmentViewModel: BoardFragmentViewModel by viewModels {
+        BoardFragmentViewModelFactory(((activity?.application) as GameApplication).repository)
+    }
 
 
     override fun onCreateView(
@@ -51,6 +54,7 @@ class BoardFragment : Fragment() {
         initVisualBoard()
 
 
+        boardFragmentViewModel.gameState?.observe(viewLifecycleOwner, Observer(::getGameState))
         progressBar = bindingBoard.pBar
 
         // Inflate the layout for this fragment
@@ -153,6 +157,7 @@ class BoardFragment : Fragment() {
         }
     }
 
+    fun getGameState(gameState: GameState?){}
     fun showGameOverPopUp(isGameOver: Boolean) {
         toast("Game over! Winner is ${boardFragmentViewModel.winner.value}")
     }
@@ -243,12 +248,15 @@ class BoardFragment : Fragment() {
 
 
             GlobalScope.launch {
+                Log.i("suggestMove", "in the GlobalScope")
                 val result = suggesterApi.getBestMove(
                     boardFragmentViewModel.gridToString(),
                     boardFragmentViewModel.currentTurn.toString()
                 )
+                Log.i("suugestMove", "after making a result")
 
                 if (result.isSuccessful) { //TODO result.isScucess
+                    Log.i("suggestMove", "inside the if - means, there is connectivity")
                     Log.d("ayush", result.body().toString())
                     val nextRecommendation = result.body()?.recommendation?.plus(1)
 
@@ -259,7 +267,8 @@ class BoardFragment : Fragment() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
-                } else
+                } else {
+                    Log.i("suggestMove", "inside the else")
                     launch(Dispatchers.Main) {
                         Toast.makeText(
                             activity,
@@ -267,6 +276,7 @@ class BoardFragment : Fragment() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
+                }
             }
         }
     }

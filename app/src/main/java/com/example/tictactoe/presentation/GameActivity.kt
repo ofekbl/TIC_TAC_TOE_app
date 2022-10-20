@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
+import com.example.tictactoe.GameApplication
 import com.example.tictactoe.R
 import com.example.tictactoe.databinding.ActivityGameBinding
 

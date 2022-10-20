@@ -1,13 +1,28 @@
 package com.example.tictactoe.presentation
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.tictactoe.*
+import com.example.tictactoe.database.GameDatabase
+import com.example.tictactoe.database.GameRepository
+import com.example.tictactoe.database.GameState
+import com.example.tictactoe.database.GamedatabaseDao
 import com.example.tictactoe.logic.Board
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
-class BoardFragmentViewModel : ViewModel() {
+class BoardFragmentViewModel(private val repository: GameRepository): ViewModel() {
+
+    val gameState : LiveData<GameState?>? = repository.getLatestGameState?.asLiveData()
+
+
+    /**
+     * Launching a new coroutine to insert the data in a non-blocking way
+     */
+    fun insert(gameState: GameState) = viewModelScope.launch {
+        repository.insert(gameState)
+    }
 
     enum class Turn{
         X,
@@ -155,3 +170,4 @@ class BoardFragmentViewModel : ViewModel() {
 
 
 }
+

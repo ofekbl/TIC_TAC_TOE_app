@@ -79,7 +79,7 @@ class BoardFragment : Fragment() {
                 (boardFragmentViewModel.playerO as HumanPlayer).sign = "O"
 
                 Log.i("Board frag", "playerO sign has set")
-                Log.i("Board frag", "playerX sign is now: ${boardFragmentViewModel.playerO.sign}")
+                Log.i("Board frag", "playerX sign is now: ${boardFragmentViewModel.playerX.sign}")
             }
 
 
@@ -88,7 +88,7 @@ class BoardFragment : Fragment() {
                 boardFragmentViewModel.playerO = ComputerPlayer()
                 (boardFragmentViewModel.playerO as ComputerPlayer).sign = "O"
                 Log.i("Board frag", "playerO sign has set")
-                Log.i("Board frag", "playerX sign is now: ${boardFragmentViewModel.playerO.sign}")
+                Log.i("Board frag", "playerX sign is now: ${boardFragmentViewModel.playerX.sign}")
 
             }
 
@@ -130,31 +130,35 @@ class BoardFragment : Fragment() {
         }
         view.findViewById<Button>(R.id.suggest_move_button).setOnClickListener {
             suggestMove(it)
-            progressBar?.visibility = View.VISIBLE
-            var i = progressBar?.progress
-            Thread(Runnable {
-                if (i != null) {
-                    while (i < 9) {
-                        activity?.runOnUiThread(Runnable {
-                            markButtonDisable(it as Button)
-                        })
-                        i += 1
-                        handler.post(Runnable {
-                            progressBar?.progress = i
-                        })
-                        try {
-                            Thread.sleep(100)
-                        } catch (e: InterruptedException) {
-                            e.printStackTrace()
-                        }
+            showProgressBar(it)
+        }
+    }
+
+    fun showProgressBar(it: View){
+        progressBar?.visibility = View.VISIBLE
+        var i = progressBar?.progress
+        Thread(Runnable {
+            if (i != null) {
+                while (i < 9) {
+                    activity?.runOnUiThread(Runnable {
+                        markButtonDisable(it as Button)
+                    })
+                    i += 1
+                    handler.post(Runnable {
+                        progressBar?.progress = i
+                    })
+                    try {
+                        Thread.sleep(100)
+                    } catch (e: InterruptedException) {
+                        e.printStackTrace()
                     }
                 }
-                activity?.runOnUiThread(Runnable {
-                    setButtonToEnabled(it as Button)
-                })
-                progressBar?.visibility = View.INVISIBLE
-            }).start()
-        }
+            }
+            activity?.runOnUiThread(Runnable {
+                setButtonToEnabled(it as Button)
+            })
+            progressBar?.visibility = View.INVISIBLE
+        }).start()
     }
 
     fun getGameState(gameState: GameState?){}
@@ -163,7 +167,7 @@ class BoardFragment : Fragment() {
     }
 
     fun setTurnLabel(sign: String?) {
-        bindingBoard.turnLabel.text = "$sign"
+        bindingBoard.turnLabel.text = "Turn $sign"
     }
 
     fun markButtonDisable(button: Button) {
@@ -244,14 +248,14 @@ class BoardFragment : Fragment() {
                     ).show()
                 })
             }
-            Log.i("suggestMove", "skip no connectivity - so there is connecticiy(?)")
+            Log.i("suggestMove", "skip no connectivity - so there is connectivity(?)")
 
 
             GlobalScope.launch {
                 Log.i("suggestMove", "in the GlobalScope")
                 val result = suggesterApi.getBestMove(
                     boardFragmentViewModel.gridToString(),
-                    boardFragmentViewModel.currentTurn.toString()
+                    boardFragmentViewModel.currentTurn.value.toString()
                 )
                 Log.i("suugestMove", "after making a result")
 
@@ -379,6 +383,13 @@ class BoardFragment : Fragment() {
         return button
     }
 
+    fun nextTurnLabel(sign: String?) : String{
+        if (sign == "O")
+            return "X"
+        else
+            return "O"
+    }
+
 
     private fun clickEvent(cell: View) {
         val cellButton: Button = cell as Button
@@ -391,10 +402,10 @@ class BoardFragment : Fragment() {
                 Log.i("clickEvent", "line before the setCell")
                 setCell(it.x, it.y, it.sign)
                 Log.i("clickEvent", "line after the setCell")
-                setTurnLabel(it.sign)
+                setTurnLabel(nextTurnLabel(it.sign))
                 //boardFragmentViewModel.currentTurn.observe(viewLifecycleOwner, Observer(::showCurrentTurn))
                 Log.i("observe clickEvent", "line before the observe turnLabel")
-                boardFragmentViewModel.turnLabel.observe(viewLifecycleOwner, Observer(::setTurnLabel))
+               // boardFragmentViewModel.turnLabel.observe(viewLifecycleOwner, Observer(::setTurnLabel))
                 Log.i("observe clickEvent", "line after the observe turnLabel")
 
             }

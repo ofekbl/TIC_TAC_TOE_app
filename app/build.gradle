@@ -4,6 +4,11 @@ plugins {
     id 'kotlin-android-extensions'
 }
 
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-v4:27.1.0'
+    }}
+
 android {
     compileSdk 31
 

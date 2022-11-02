@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database(entities = [GameState::class], version = 1, exportSchema = false)
+@Database(entities = [GameState::class], version = 2, exportSchema = false)
 abstract class GameDatabase : RoomDatabase() {
 
     abstract val gameDatabaseDao: GamedatabaseDao
@@ -17,7 +17,7 @@ abstract class GameDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: GameDatabase? = null
 
-        fun getInstance(context: Context, scope: CoroutineScope): GameDatabase?{
+        fun getInstance(context: Context, scope: CoroutineScope): GameDatabase {
             synchronized(this){
                 var instance = INSTANCE
                 if(instance == null){

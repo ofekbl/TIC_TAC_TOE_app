@@ -162,6 +162,7 @@ class BoardFragment : Fragment() {
     }
 
     private fun setUIByState(gameState: GameState) {
+        Log.i("setUIByState", "entered")
         if(!boardFragmentViewModel.isGameOver()) {
             setTurnLabel(gameState.nextTurn)
             setGridUI(gameState.gridState)
@@ -175,14 +176,13 @@ class BoardFragment : Fragment() {
     private fun setGridUI(grid: String){
         for (i in 0..8){
             //if there was a sign in the cell
-            Log.i("setGridUI", "grid in the $i spot: ${grid[i].toString()}")
+            Log.i("setGridUI", "grid in the $i spot: ${grid[i]}")
             if (grid[i].toString() != "-"){
                 val spots: Array<Int> = convertCellToSpots(i + 1)
                 boardFragmentViewModel.gameState.value?.gridState?.get(i)
                     ?.let { setCell(spots[0], spots[1], it.toString()) }
             }
         }
-
     }
 
     private fun showGameOverPopUp() {
@@ -465,21 +465,21 @@ class BoardFragment : Fragment() {
         val x = spot[0]
         val y = spot[1]
 
-        var result: BoardFragmentViewModel.Result = boardFragmentViewModel.tryToMakeAMove(x, y)
-            if (result.valid) {
-                if(!boardFragmentViewModel.isGameOver()) {
-                    Log.i("clickEvent", "line before the setCell")
-                    setCell(result.x, result.y, result.sign)
-                    Log.i("clickEvent", "line after the setCell")
-                    setTurnLabel(nextTurnLabel(result.sign))
-                }
-                else{
-                    setCell(result.x, result.y, result.sign)
-                    markAllButtonsDisabled()
-                    showGameOverPopUp()
-                }
-
-        }
+        boardFragmentViewModel.tryToMakeAMove(x, y)
+//            if (result.valid) {
+//                if(!boardFragmentViewModel.isGameOver()) {
+//                    Log.i("clickEvent", "line before the setCell")
+//                    setCell(result.x, result.y, result.sign)
+//                    Log.i("clickEvent", "line after the setCell")
+//                    setTurnLabel(nextTurnLabel(result.sign))
+//                }
+//                else{
+//                    setCell(result.x, result.y, result.sign)
+//                    markAllButtonsDisabled()
+//                    showGameOverPopUp()
+//                }
+//
+//        }
     }
 
     private fun setCell(x: Int, y: Int, playerSign: String) {

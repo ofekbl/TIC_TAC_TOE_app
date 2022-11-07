@@ -27,6 +27,7 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
         repository.insert(gameState)
     }
 
+
     enum class Turn{
         X,
         O
@@ -58,10 +59,11 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
             }
             gameOverState = true
             endGame()
-            val newGameState = gameState.value?.copy(nextTurn = "X", winner = "no one", isGameOver = false,  gridState = "---------")
+            val newGameState = gameState.value?.copy(nextTurn = "X",gameType = gameType, winner = "no one", isGameOver = false,  gridState = "---------")
             if (newGameState != null) {
                 Log.i("tryToMakeA..", "newGameState is not null then insert")
                 insert(newGameState)
+                _gameState.value = newGameState!!
             }
             return true
         }
@@ -75,10 +77,11 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
             gameOverState = true
             endGame()
             //start new game for the next time
-            val newGameState = gameState.value?.copy(nextTurn = "X", winner = "no one", isGameOver = false,  gridState = "---------")
+            val newGameState = gameState.value?.copy(nextTurn = "X", gameType = gameType, winner = "no one", isGameOver = false,  gridState = "---------")
             if (newGameState != null) {
                 Log.i("tryToMakeA..", "newGameState is not null then insert")
                 insert(newGameState)
+                _gameState.value = newGameState!!
             }
             return true
         }
@@ -86,10 +89,11 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
     }
 
     private fun endGame(){
-        val newGameState = gameState.value?.copy(nextTurn = nextTurn, winner = winner, isGameOver = true,  gridState = gridState)
+        val newGameState = gameState.value?.copy(nextTurn = nextTurn, gameType = gameType, winner = winner, isGameOver = true,  gridState = gridState)
         if (newGameState != null) {
             Log.i("tryToMakeA..", "newGameState is not null then insert")
             insert(newGameState)
+            _gameState.value = newGameState!!
         }
     }
 
@@ -120,17 +124,11 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
         return turnLabel
     }
 
-    fun tryToMakeAMove(x: Int, y: Int): Result {
-        var result: Result
+    fun tryToMakeAMove(x: Int, y: Int) {
 
         Log.i("board viewmodel", "try to make a move")
 
-        result = Result(false, x, y, currentPlayer.sign)
-
-
         if (!isTakenSpot(x, y)) {
-            result = Result(true, x, y, currentPlayer.sign)
-
             if (!isGameOver()) {
                     if(currentPlayer is HumanPlayer) {
                         Log.i("tryToMakeAMove", "if currentPlayer is human")
@@ -140,10 +138,11 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
 
                         changeCurrentPlayer()
                         nextTurn = changeTurns()
-                        val newGameState = gameState.value?.copy(nextTurn = nextTurn, winner = winner, isGameOver = gameOverState,  gridState = gridState)
+                        val newGameState = gameState.value?.copy(nextTurn = nextTurn,gameType = gameType, winner = winner, isGameOver = gameOverState,  gridState = gridState)
                         if (newGameState != null) {
                             Log.i("tryToMakeA..", "newGameState is not null then insert")
                             insert(newGameState)
+                            _gameState.value = newGameState!!
                         }
                     }
 
@@ -158,16 +157,16 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
                             changeCurrentPlayer()
                             //boardFragment.setTurnLabel("Turn ${_currentPlayer.value?.sign}")
                             nextTurn = changeTurns()
-                            val newGameState = gameState.value?.copy(nextTurn = nextTurn, winner = winner, isGameOver = gameOverState,  gridState = gridState)
+                            val newGameState = gameState.value?.copy(nextTurn = nextTurn,gameType = gameType, winner = winner, isGameOver = gameOverState,  gridState = gridState)
                             if (newGameState != null) {
                                 Log.i("tryToMakeA..", "newGameState is not null then insert")
                                 insert(newGameState)
+                                _gameState.value = newGameState!!
                             }
                         }
                     }
                 }
             }
-            return result
         }
 
     fun gridToString(): String {

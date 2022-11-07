@@ -37,5 +37,4 @@ class GameRepository(private val gameDao: GamedatabaseDao) {
     suspend fun insert(gameState: GameState) {
         gameDao.insert(gameState)
     }
-
 }

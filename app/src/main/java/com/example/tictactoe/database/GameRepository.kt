@@ -2,6 +2,7 @@ package com.example.tictactoe.database
 
 import android.util.Log
 import androidx.annotation.WorkerThread
+import androidx.work.WorkManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 
 class GameRepository(private val gameDao: GamedatabaseDao) {
+
 
     // Room executes all queries on a separate thread.
     // Observed Flow will notify the observer when the data has changed.
@@ -30,6 +32,9 @@ class GameRepository(private val gameDao: GamedatabaseDao) {
         return gameDao.get(key)
     }
 
+    suspend fun clear(){
+        gameDao.clear()
+    }
     // By default Room runs suspend queries off the main thread, therefore, we don't need to
     // implement anything else to ensure we're not doing long running database work
     // off the main thread.

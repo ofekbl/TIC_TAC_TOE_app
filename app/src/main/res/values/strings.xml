@@ -9,4 +9,6 @@
     <string name="game_screen">game_screen</string>
     <string name="Board">Board</string>
     <string name="Moves">Moves</string>
+    <string name="channel_name">Tic Tac Toe</string>
+    <string name="channel_description">"Game State "</string>
 </resources>

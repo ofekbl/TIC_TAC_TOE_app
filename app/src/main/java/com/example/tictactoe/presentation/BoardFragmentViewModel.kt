@@ -1,21 +1,33 @@
 package com.example.tictactoe.presentation
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
+import androidx.work.OneTimeWorkRequest
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.tictactoe.*
 import com.example.tictactoe.database.GameRepository
 import com.example.tictactoe.database.GameState
 import com.example.tictactoe.logic.Board
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.util.Date.from
+import java.util.concurrent.TimeUnit
 
 class BoardFragmentViewModel(private val repository: GameRepository): ViewModel() {
 
+//    private val _shouldScheduleWork = MutableLiveData<Boolean>()
+//    val shouldScheduleWork: LiveData<Boolean>
+//        get() = _shouldScheduleWork
+//
     private val _gameState = MutableLiveData<GameState>()
     val gameState: LiveData<GameState>
         get() = _gameState
 
     init {
+       // _shouldScheduleWork.value = false
         viewModelScope.launch {
             _gameState.value = repository.getLatestGameState()
         }
@@ -27,39 +39,28 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
         repository.insert(gameState)
     }
 
-
-    enum class Turn{
-        X,
-        O
-    }
-
     lateinit var playerO: Player
     var playerX = HumanPlayer()
-    lateinit var gridState : String
-    var turnLabel = "Turn X"
-    var gameType = 0
-    private var firstTurn = Turn.X
-    var nextTurn : String = firstTurn.toString()
-    var winner = "no one"
+
     private var currentPlayer = playerX as Player
-    var gameOverState = false
-    var currentTurn = firstTurn
+
     private val cells = Cells()
 
-    data class Result(val valid: Boolean, val x: Int, val y: Int, val sign: String)
 
     fun isGameOver(): Boolean {
         Log.i("Communicator", "is game over")
 
+        var newWinner : String
+        var gameOverState : Boolean
         if (Column.isFull() or Row.isFull() or Diagonal.isFull()) {
             if (currentPlayer.sign == "X")
-                winner = "O"
+                newWinner = "O"
             else {
-                winner = "X"
+                newWinner = "X"
             }
             gameOverState = true
-            endGame()
-            val newGameState = gameState.value?.copy(nextTurn = "X",gameType = gameType, winner = "no one", isGameOver = false,  gridState = "---------")
+            //endGame()
+            val newGameState = gameState.value?.copy( winner = newWinner, isGameOver = gameOverState)
             if (newGameState != null) {
                 Log.i("tryToMakeA..", "newGameState is not null then insert")
                 insert(newGameState)
@@ -70,14 +71,14 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
 
         else if(cells.isFull()){
             if (currentPlayer.sign == "X")
-                winner = "O"
+                newWinner = "O"
             else
-                winner = "X"
-            winner = currentPlayer.sign
+                newWinner = "X"
+            //newWinner = currentPlayer.sign
             gameOverState = true
-            endGame()
+            //endGame()
             //start new game for the next time
-            val newGameState = gameState.value?.copy(nextTurn = "X", gameType = gameType, winner = "no one", isGameOver = false,  gridState = "---------")
+            val newGameState = gameState.value?.copy(winner = newWinner, isGameOver = gameOverState)
             if (newGameState != null) {
                 Log.i("tryToMakeA..", "newGameState is not null then insert")
                 insert(newGameState)
@@ -88,14 +89,14 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
         return false
     }
 
-    private fun endGame(){
-        val newGameState = gameState.value?.copy(nextTurn = nextTurn, gameType = gameType, winner = winner, isGameOver = true,  gridState = gridState)
-        if (newGameState != null) {
-            Log.i("tryToMakeA..", "newGameState is not null then insert")
-            insert(newGameState)
-            _gameState.value = newGameState!!
-        }
-    }
+//    private fun endGame(){
+//        val newGameState = gameState.value?.copy(nextTurn = nextTurn, gameType = gameType, winner = winner, isGameOver = true,  gridState = gameState.value!!.gridState)
+//        if (newGameState != null) {
+//            Log.i("tryToMakeA..", "newGameState is not null then insert")
+//            insert(newGameState)
+//            _gameState.value = newGameState!!
+//        }
+//    }
 
     private fun isTakenSpot(rowNum : Int, colNum: Int) : Boolean {
         Log.i("Communicator", "is taken spot")
@@ -114,31 +115,49 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
     }
 
     private fun changeTurns() :String {
-        if (currentTurn == Turn.X){
-            currentTurn = Turn.O
+        val nextTurn: String
+        if (gameState.value?.nextTurn == "X"){
+            nextTurn = "O"
         }
         else {
-            currentTurn = Turn.X
+            nextTurn = "O"
         }
-        turnLabel = "Turn ${currentTurn}"
-        return turnLabel
+        val newGameState = gameState.value?.copy(nextTurn = nextTurn)
+        if (newGameState != null){
+            insert(newGameState)
+            _gameState.value = newGameState!!
+        }
+        return "$nextTurn"
     }
 
-    fun tryToMakeAMove(x: Int, y: Int) {
+    private fun getCurrTurn(nextTurn: String) : String{
+        val currTurn: String
+        if (nextTurn == "X"){
+            currTurn = "O"
+        }
+        else {
+            currTurn = "X"
+        }
+        return currTurn
+    }
 
-        Log.i("board viewmodel", "try to make a move")
+
+    private fun tryToMakeAMove(x: Int, y: Int) {
+        //var newNextTurn: String
+
+        Log.i("board viewModel", "try to make a move")
 
         if (!isTakenSpot(x, y)) {
             if (!isGameOver()) {
                     if(currentPlayer is HumanPlayer) {
                         Log.i("tryToMakeAMove", "if currentPlayer is human")
                         currentPlayer.play(x, y)
-                        gridState = gridToString()
+//                        _gameState.value.gridState = gridToString()
                         Log.i("isTakenSpot", "before insertion")
 
                         changeCurrentPlayer()
-                        nextTurn = changeTurns()
-                        val newGameState = gameState.value?.copy(nextTurn = nextTurn,gameType = gameType, winner = winner, isGameOver = gameOverState,  gridState = gridState)
+                        //newNextTurn = changeTurns()
+                        val newGameState = gameState.value?.copy(gridState = gameState.value!!.gridState)
                         if (newGameState != null) {
                             Log.i("tryToMakeA..", "newGameState is not null then insert")
                             insert(newGameState)
@@ -146,7 +165,7 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
                         }
                     }
 
-                    if (gameType == 2) { //AI
+                    if (gameState.value!!.gameType == 2) { //AI
                         if (!isGameOver()) {
                             val spot = (playerO as ComputerPlayer).play()
                             val randomRow = spot[0]
@@ -156,8 +175,9 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
                             //_shouldSetCell.value = true
                             changeCurrentPlayer()
                             //boardFragment.setTurnLabel("Turn ${_currentPlayer.value?.sign}")
-                            nextTurn = changeTurns()
-                            val newGameState = gameState.value?.copy(nextTurn = nextTurn,gameType = gameType, winner = winner, isGameOver = gameOverState,  gridState = gridState)
+                            //newNextTurn = changeTurns()
+
+                            val newGameState = gameState.value?.copy(gridState = gameState.value!!.gridState)
                             if (newGameState != null) {
                                 Log.i("tryToMakeA..", "newGameState is not null then insert")
                                 insert(newGameState)
@@ -168,6 +188,78 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
                 }
             }
         }
+
+    fun buttonClicked(x: Int, y: Int){
+
+        tryToMakeAMove(x, y)
+        val cellNum = convertSpotToCellNum(x, y)
+        if (gameState.value != null) {
+            setCell(cellNum, getCurrTurn(gameState.value!!.nextTurn))
+        }
+        val newNextTurn = changeTurns()
+        val newGameState = gameState.value?.copy(nextTurn = newNextTurn)
+        if (newGameState != null) {
+            Log.i("tryToMakeA..", "newGameState is not null then insert")
+            insert(newGameState)
+            _gameState.value = newGameState!!
+        }
+
+    }
+
+    private fun setCell(cellNum : Int, currTurn: String) {
+        val gridAsCharArray = stringToArray(gameState.value?.gridState)
+        gridAsCharArray[cellNum - 1] = currTurn[0]
+        val newGameState = gameState.value?.copy(gridState = String(gridAsCharArray))
+        if (newGameState != null){
+            insert(newGameState)
+            _gameState.value = newGameState!!
+        }
+    }
+
+    private fun stringToArray(string: String?) : CharArray{
+        val arr = CharArray(9)
+        if (string != null) {
+            for (i in 0..8) {
+                arr[i] = string[i]
+            }
+        }
+        return arr
+    }
+
+    private fun convertSpotToCellNum(x: Int, y: Int): Int {
+        var cellNum = 0
+        Log.i("convertSpotToCell", "entered with $x $y")
+        when (Pair(x, y)) {
+            Pair(1, 1) -> {
+                cellNum = 1
+            }
+            Pair(1, 2) -> {
+                cellNum = 2
+            }
+            Pair(1, 3) -> {
+                cellNum = 3
+            }
+            Pair(2, 1) -> {
+                cellNum = 4
+            }
+            Pair(2, 2) -> {
+                cellNum = 5
+            }
+            Pair(2, 3) -> {
+                cellNum = 6
+            }
+            Pair(3, 1) -> {
+                cellNum = 7
+            }
+            Pair(3, 2) -> {
+                cellNum = 8
+            }
+            Pair(3, 3) -> {
+                cellNum = 9
+            }
+        }
+        return cellNum
+    }
 
     fun gridToString(): String {
         return "${Board.cell1.value}${Board.cell2.value}${Board.cell3.value}${Board.cell4.value}${Board.cell5.value}${Board.cell6.value}${Board.cell7.value}${Board.cell8.value}${Board.cell9.value}"

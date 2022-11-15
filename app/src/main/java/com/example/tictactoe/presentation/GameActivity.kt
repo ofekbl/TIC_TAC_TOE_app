@@ -1,20 +1,24 @@
 package com.example.tictactoe.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.tictactoe.GameApplication
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.tictactoe.GameStateWorker
 import com.example.tictactoe.R
 import com.example.tictactoe.databinding.ActivityGameBinding
+import java.util.concurrent.TimeUnit
 
 
 class GameActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityGameBinding
+    lateinit var workManager: WorkManager
+
 
     private val movesFragment = MovesFragment()
     private val boardFragment = BoardFragment()
@@ -32,6 +36,7 @@ class GameActivity : AppCompatActivity() {
             }
             true
         }
+
         //getting the player type that was chosen in the main activity
         val playerType = intent.getIntExtra("player type",1)
         Log.i("Game Activity", "player type is: $playerType")
@@ -50,13 +55,21 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    fun showSuggestedMove(click: View){
-//        var message = "message"
-//        var uid = "123456" //I wanted to use it as int, but mapOf didn't allow me
-//        var token = "token"
-//        val payload = mapOf("token" to token, "user_id" to uid, "message" to message)
-//        get("https://some.api.com/method/some.method", params=payload)
-//        val popup = Toast.makeText(this,"Message sent!", Toast.LENGTH_LONG)
-//        popup.show()
+    override fun onStart() {
+        super.onStart()
+        workManager = WorkManager.getInstance(this)
+        workManager.cancelUniqueWork("GameStateWork")
+    }
+    override fun onStop() {
+        super.onStop()
+        shouldScheduleNotificationWorker()
+    }
+
+        private fun shouldScheduleNotificationWorker(){
+        val work = PeriodicWorkRequestBuilder<GameStateWorker>(15, TimeUnit.MINUTES)
+//            .setConstraints(constraints)
+            .build()
+
+        workManager.enqueueUniquePeriodicWork("GameStateWork", ExistingPeriodicWorkPolicy.REPLACE, work)
     }
 }

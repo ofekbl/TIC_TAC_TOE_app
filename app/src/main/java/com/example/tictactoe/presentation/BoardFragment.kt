@@ -17,6 +17,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.tictactoe.*
 import com.example.tictactoe.database.GameDatabase
 import com.example.tictactoe.database.GameState
@@ -30,9 +32,12 @@ import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 
 class BoardFragment : Fragment() {
+
+
 
     private var progressBar: ProgressBar? = null
     private val handler = Handler()
@@ -44,7 +49,10 @@ class BoardFragment : Fragment() {
     }
 
 
+
+
     override fun onCreateView(
+
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
@@ -73,7 +81,7 @@ class BoardFragment : Fragment() {
             "1" -> { //human player
                 Log.i("Board frag", "human player")
 
-                boardFragmentViewModel.gameType = 1
+                //boardFragmentViewModel.gameType = 1
                 boardFragmentViewModel.playerO = HumanPlayer()
                 (boardFragmentViewModel.playerO as HumanPlayer).sign = "O"
 
@@ -83,7 +91,7 @@ class BoardFragment : Fragment() {
 
 
             "2" -> { //ai player
-                boardFragmentViewModel.gameType = 2
+                //boardFragmentViewModel.gameType = 2
                 boardFragmentViewModel.playerO = ComputerPlayer()
                 (boardFragmentViewModel.playerO as ComputerPlayer).sign = "O"
                 Log.i("Board frag", "playerO sign has set")
@@ -134,6 +142,17 @@ class BoardFragment : Fragment() {
         boardFragmentViewModel.gameState.observe(viewLifecycleOwner, Observer(::setUIByState))
     }
 
+
+
+    private fun clickEvent(cell: View) {
+        val cellButton: Button = cell as Button
+        val spot = convertCellToSpots(cellButton)
+        val x = spot[0]
+        val y = spot[1]
+
+        boardFragmentViewModel.buttonClicked(x, y)
+    }
+
     private fun showProgressBar(it: View){
         progressBar?.visibility = View.VISIBLE
         var i = progressBar?.progress
@@ -164,8 +183,8 @@ class BoardFragment : Fragment() {
     private fun setUIByState(gameState: GameState) {
         Log.i("setUIByState", "entered")
         if(!boardFragmentViewModel.isGameOver()) {
-            setTurnLabel(gameState.nextTurn)
-            setGridUI(gameState.gridState)
+            //setTurnLabel(gameState.nextTurn)
+            setGridUI(gameState.gridState, gameState)
         }
         else {
             markAllButtonsDisabled()
@@ -173,20 +192,21 @@ class BoardFragment : Fragment() {
         }
     }
 
-    private fun setGridUI(grid: String){
+    private fun setGridUI(grid: String, gameState: GameState){
         for (i in 0..8){
             //if there was a sign in the cell
             Log.i("setGridUI", "grid in the $i spot: ${grid[i]}")
             if (grid[i].toString() != "-"){
-                val spots: Array<Int> = convertCellToSpots(i + 1)
-                boardFragmentViewModel.gameState.value?.gridState?.get(i)
-                    ?.let { setCell(spots[0], spots[1], it.toString()) }
+                var cellNum: Int = i + 1
+                var spots = convertCellToSpots(cellNum)
+                var cell : Button = convertSpotToCell(spots[0], spots[1])
+               cell.text = gameState.nextTurn
             }
         }
     }
 
     private fun showGameOverPopUp() {
-        toast("Game over! Winner is ${boardFragmentViewModel.winner}")
+        toast("Game over! Winner is ${boardFragmentViewModel.gameState.value!!.winner}")
     }
 
     private fun setTurnLabel(sign: String) {
@@ -276,7 +296,7 @@ class BoardFragment : Fragment() {
                 Log.i("suggestMove", "in the GlobalScope")
                 val result = suggesterApi.getBestMove(
                     boardFragmentViewModel.gridToString(),
-                    boardFragmentViewModel.currentTurn.toString()
+                    boardFragmentViewModel.gameState.value!!.nextTurn
                 )
                 Log.i("suugestMove", "after making a result")
 
@@ -452,6 +472,41 @@ class BoardFragment : Fragment() {
         return button
     }
 
+    private fun convertSpotToCellNum(x: Int, y: Int): Int {
+        var cellNum = 0
+        Log.i("convertSpotToCell", "entered with $x $y")
+        when (Pair(x, y)) {
+            Pair(1, 1) -> {
+                cellNum = 1
+            }
+            Pair(1, 2) -> {
+                cellNum = 2
+            }
+            Pair(1, 3) -> {
+                cellNum = 3
+            }
+            Pair(2, 1) -> {
+                cellNum = 4
+            }
+            Pair(2, 2) -> {
+                cellNum = 5
+            }
+            Pair(2, 3) -> {
+                cellNum = 6
+            }
+            Pair(3, 1) -> {
+                cellNum = 7
+            }
+            Pair(3, 2) -> {
+                cellNum = 8
+            }
+            Pair(3, 3) -> {
+                cellNum = 9
+            }
+        }
+        return cellNum
+    }
+
     private fun nextTurnLabel(sign: String?) : String{
         if (sign == "O")
             return "X"
@@ -459,36 +514,17 @@ class BoardFragment : Fragment() {
             return "O"
     }
 
-    private fun clickEvent(cell: View) {
-        val cellButton: Button = cell as Button
-        val spot = convertCellToSpots(cellButton)
-        val x = spot[0]
-        val y = spot[1]
 
-        boardFragmentViewModel.tryToMakeAMove(x, y)
-//            if (result.valid) {
-//                if(!boardFragmentViewModel.isGameOver()) {
-//                    Log.i("clickEvent", "line before the setCell")
-//                    setCell(result.x, result.y, result.sign)
-//                    Log.i("clickEvent", "line after the setCell")
-//                    setTurnLabel(nextTurnLabel(result.sign))
-//                }
-//                else{
-//                    setCell(result.x, result.y, result.sign)
-//                    markAllButtonsDisabled()
-//                    showGameOverPopUp()
-//                }
+
+//    private fun setCell(x: Int, y: Int, playerSign: String, gameState: GameState) {
+//        val button = convertSpotToCell(x, y)
+//        val cellNum = convertSpotToCellNum(x, y)
 //
-//        }
-    }
-
-    private fun setCell(x: Int, y: Int, playerSign: String) {
-        val button = convertSpotToCell(x, y)
-        button.text = playerSign
-//        boardFragmentViewModel.gameState.value?.copy(nextTurn = playerSign)
-        //setTurnLabel("Turn $playerSign")
-        Log.i("setCell", "turnLabel should be $playerSign")
-    }
+//        button.text = playerSign
+////        boardFragmentViewModel.gameState.value?.copy(nextTurn = playerSign)
+//        //setTurnLabel("Turn $playerSign")
+//        Log.i("setCell", "turnLabel should be $playerSign")
+//    }
 
     private fun resetGrid() {
             Board.cell1.value = "-"

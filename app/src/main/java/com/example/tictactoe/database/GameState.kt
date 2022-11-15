@@ -15,7 +15,7 @@ data class GameState(
     val gameType: Int = -1,
 
     @ColumnInfo(name = "next_turn")
-    val nextTurn: String = "-",
+    val nextTurn: String = "X",
 
     @ColumnInfo(name = "is_game_over")
     val isGameOver: Boolean = false,
@@ -30,12 +30,4 @@ data class GameState(
         companion object{
             var initialGrid = "---------"
         }
-
-    fun copy(
-        gameType: Int = this.gameType,
-        nextTurn: String = this.nextTurn,
-        isGameOver: Boolean = this.isGameOver,
-        winner: String = this.winner,
-        gridState: String = this.gridState
-    ) = GameState(gameId, gameType, nextTurn, isGameOver, winner, gridState)
 }

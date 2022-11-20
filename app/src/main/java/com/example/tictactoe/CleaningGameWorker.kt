@@ -18,4 +18,5 @@ class CleaningGameWorker(context: Context, params: WorkerParameters): CoroutineW
         repository.clear()
         return Result.success()
     }
+
 }

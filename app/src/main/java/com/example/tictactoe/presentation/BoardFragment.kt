@@ -13,18 +13,15 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.tictactoe.*
-import com.example.tictactoe.database.GameDatabase
+import com.example.tictactoe.ComputerPlayer
+import com.example.tictactoe.GameApplication
+import com.example.tictactoe.HumanPlayer
+import com.example.tictactoe.R
 import com.example.tictactoe.database.GameState
 import com.example.tictactoe.databinding.FragmentBoardBinding
 import com.example.tictactoe.logic.Board
-
 import com.example.tictactoe.logic.ConnectivityUtils
 import com.example.tictactoe.logic.RetrofitHelper
 import com.example.tictactoe.logic.SuggesterApi
@@ -32,7 +29,6 @@ import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 
 class BoardFragment : Fragment() {
@@ -47,9 +43,6 @@ class BoardFragment : Fragment() {
     private val boardFragmentViewModel: BoardFragmentViewModel by viewModels {
         BoardFragmentViewModelFactory(((activity?.application) as GameApplication).repository)
     }
-
-
-
 
     override fun onCreateView(
 
@@ -182,16 +175,19 @@ class BoardFragment : Fragment() {
 
     private fun setUIByState(gameState: GameState) {
         Log.i("setUIByState", "entered")
-        if(!boardFragmentViewModel.isGameOver()) {
+        if(!boardFragmentViewModel.gameState.value?.isGameOver!!) {
             //setTurnLabel(gameState.nextTurn)
             setGridUI(gameState.gridState, gameState)
         }
         else {
-            markAllButtonsDisabled()
-            toast("Game is over! Winner is ${gameState.winner}")
+            endGame()
         }
     }
 
+    fun endGame(){
+        markAllButtonsDisabled()
+        toast("Game is over! Winner is ${boardFragmentViewModel.gameState.value!!.winner}")
+    }
     private fun setGridUI(grid: String, gameState: GameState){
         for (i in 0..8){
             //if there was a sign in the cell
@@ -200,17 +196,12 @@ class BoardFragment : Fragment() {
                 var cellNum: Int = i + 1
                 var spots = convertCellToSpots(cellNum)
                 var cell : Button = convertSpotToCell(spots[0], spots[1])
-               cell.text = gameState.nextTurn
+                cell.text = gameState.gridState[i].toString()
+                val turnLabel = getCurrTurn(gameState.nextTurn)
+                bindingBoard.turnLabel.text = "Turn $turnLabel"
+
             }
         }
-    }
-
-    private fun showGameOverPopUp() {
-        toast("Game over! Winner is ${boardFragmentViewModel.gameState.value!!.winner}")
-    }
-
-    private fun setTurnLabel(sign: String) {
-        bindingBoard.turnLabel.text = "Turn $sign"
     }
 
     private fun markButtonDisable(button: Button) {
@@ -271,6 +262,17 @@ class BoardFragment : Fragment() {
 
     private fun toast(msg: String) {
         Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun getCurrTurn(nextTurn: String) : String{
+        val currTurn: String
+        if (nextTurn == "X"){
+            currTurn = "O"
+        }
+        else {
+            currTurn = "X"
+        }
+        return currTurn
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -471,60 +473,6 @@ class BoardFragment : Fragment() {
         }
         return button
     }
-
-    private fun convertSpotToCellNum(x: Int, y: Int): Int {
-        var cellNum = 0
-        Log.i("convertSpotToCell", "entered with $x $y")
-        when (Pair(x, y)) {
-            Pair(1, 1) -> {
-                cellNum = 1
-            }
-            Pair(1, 2) -> {
-                cellNum = 2
-            }
-            Pair(1, 3) -> {
-                cellNum = 3
-            }
-            Pair(2, 1) -> {
-                cellNum = 4
-            }
-            Pair(2, 2) -> {
-                cellNum = 5
-            }
-            Pair(2, 3) -> {
-                cellNum = 6
-            }
-            Pair(3, 1) -> {
-                cellNum = 7
-            }
-            Pair(3, 2) -> {
-                cellNum = 8
-            }
-            Pair(3, 3) -> {
-                cellNum = 9
-            }
-        }
-        return cellNum
-    }
-
-    private fun nextTurnLabel(sign: String?) : String{
-        if (sign == "O")
-            return "X"
-        else
-            return "O"
-    }
-
-
-
-//    private fun setCell(x: Int, y: Int, playerSign: String, gameState: GameState) {
-//        val button = convertSpotToCell(x, y)
-//        val cellNum = convertSpotToCellNum(x, y)
-//
-//        button.text = playerSign
-////        boardFragmentViewModel.gameState.value?.copy(nextTurn = playerSign)
-//        //setTurnLabel("Turn $playerSign")
-//        Log.i("setCell", "turnLabel should be $playerSign")
-//    }
 
     private fun resetGrid() {
             Board.cell1.value = "-"

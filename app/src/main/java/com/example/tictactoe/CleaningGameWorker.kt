@@ -1,6 +1,7 @@
 package com.example.tictactoe
 
 import android.content.Context
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -13,6 +14,7 @@ class CleaningGameWorker(context: Context, params: WorkerParameters): CoroutineW
 
     override suspend fun doWork(): Result {
         //reset game
+        Log.i("clean work", "reset game")
         repository.clear()
         return Result.success()
     }

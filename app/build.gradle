@@ -20,6 +20,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        flavorDimensions "default"
     }
 
     buildFeatures{
@@ -31,6 +32,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug{
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -40,6 +45,17 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs += [
                 "-Xjvm-default=all",]
+    }
+
+    productFlavors{
+
+        main{
+            applicationId "com.tictactoe.androidproductflavor.main"
+        }
+
+        aura{
+            applicationId "com.tictactoe.androidproductflavor.aura"
+        }
     }
 }
 

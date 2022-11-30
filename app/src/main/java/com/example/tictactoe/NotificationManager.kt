@@ -35,7 +35,6 @@ class NotificationManager(val context: Context) {
             val mChannel = NotificationChannel(channel.id, name, importance)
             mChannel.description = descriptionText
 
-
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -44,14 +43,13 @@ class NotificationManager(val context: Context) {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun createNotification(channel: Channel) : Notification{
-        val notification = Notification.Builder(context,channel.id)
+    fun createNotification(channel: Channel): Notification {
+
+        return Notification.Builder(context, channel.id)
             .setContentTitle("Hello Anna")
             .setContentText("Hello Ofek")
             .setSmallIcon(R.drawable.ic_baseline_folder_24)
             .build()
-
-        return notification
     }
 
     fun notify(notification: Notification, notificationId: Int){
@@ -59,5 +57,4 @@ class NotificationManager(val context: Context) {
             notify(notificationId, notification)
         }
     }
-
 }

@@ -15,9 +15,9 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.example.tictactoe.ComputerPlayer
+import com.example.tictactoe.logic.ComputerPlayer
 import com.example.tictactoe.GameApplication
-import com.example.tictactoe.HumanPlayer
+import com.example.tictactoe.logic.HumanPlayer
 import com.example.tictactoe.R
 import com.example.tictactoe.database.GameState
 import com.example.tictactoe.databinding.FragmentBoardBinding
@@ -184,7 +184,7 @@ class BoardFragment : Fragment() {
         }
     }
 
-    fun endGame(){
+    private fun endGame(){
         markAllButtonsDisabled()
         toast("Game is over! Winner is ${boardFragmentViewModel.gameState.value!!.winner}")
     }

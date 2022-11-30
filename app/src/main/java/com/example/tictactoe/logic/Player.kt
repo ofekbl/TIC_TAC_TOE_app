@@ -1,7 +1,6 @@
-package com.example.tictactoe
+package com.example.tictactoe.logic
 
 import android.util.Log
-import com.example.tictactoe.logic.GameHandler
 
 abstract class Player {
     abstract var sign: String

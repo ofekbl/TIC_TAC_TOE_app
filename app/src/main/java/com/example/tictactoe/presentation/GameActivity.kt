@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -64,12 +65,13 @@ class GameActivity : AppCompatActivity() {
         super.onStop()
         shouldScheduleNotificationWorker()
     }
-
+//should be in gameApplication
         private fun shouldScheduleNotificationWorker(){
         val work = PeriodicWorkRequestBuilder<GameStateWorker>(15, TimeUnit.MINUTES)
 //            .setConstraints(constraints)
             .build()
 
+            //REPLACE policy will cause a bug where if the user gets in and out in less than 15 minutes there will be no notification
         workManager.enqueueUniquePeriodicWork("GameStateWork", ExistingPeriodicWorkPolicy.REPLACE, work)
     }
 }

@@ -19,17 +19,19 @@ class GameStateWorker(context: Context, params: WorkerParameters) : CoroutineWor
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun doWork(): Result {
         if (!repository.getLatestGameState().isGameOver){
+            //save the counter in shared pref
             counter++
             if (counter >= 3){
                 val cleaningWork = OneTimeWorkRequestBuilder<CleaningGameWorker>().build()
+               // WorkManager.getInstance(applicationContext).cancelUniqueWork("GameStateWork")
                 WorkManager.getInstance(applicationContext).enqueue(cleaningWork)
-                return Result.failure()
+                return Result.success()
             }
             val notification = notificationManager.createNotification(NotificationManager.Channel.TicTacToe)
             notificationManager.notify(notification, NOTIFICATION_ID)
             Log.i("doWork", "Hello Anna")
             return Result.success()
         }
-         return Result.failure()
+         return Result.success()
     }
 }

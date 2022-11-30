@@ -15,6 +15,8 @@ class CleaningGameWorker(context: Context, params: WorkerParameters): CoroutineW
     override suspend fun doWork(): Result {
         //reset game
         Log.i("clean work", "reset game")
+        //the worker should not clear, it should over the game -> the other worker will doWork() in loop
+        //but won't do anything
         repository.clear()
         return Result.success()
     }

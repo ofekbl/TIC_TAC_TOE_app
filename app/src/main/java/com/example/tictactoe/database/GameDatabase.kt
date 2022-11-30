@@ -12,7 +12,8 @@ import kotlinx.coroutines.launch
 abstract class GameDatabase : RoomDatabase() {
 
     abstract val gameDatabaseDao: GamedatabaseDao
-
+//the reason to write this instead of do GameDataBase a singleton is that the function needs params
+    //singleton doesn't have params
     companion object{
         @Volatile
         private var INSTANCE: GameDatabase? = null

@@ -31,23 +31,17 @@ open class Cells {
 
 
     object Row : Cells() {
-
         override fun isFull(): Boolean {
-            var isFull = true
+            var isFull = false
             for (i in 0 until 3) {
-                isFull = true
-                for (j in 0 until 3) {
-                    Log.i(
-                        "isFull row",
-                        "entered loop - first row is: ${Board.gameGrid[0][i].value}"
-                    )
-                    isFull = (invokeX(i, j) and invokeX(i, j) and invokeX(i, j)) or
-                            (invokeO(i, 0) and invokeO(i, 1) and invokeO(i, 2))
-                }
+                Log.i("isFull row", "entered loop")
+                isFull = (invokeX(i, 0) and invokeX(i, 1) and invokeX(i, 2)) or
+                        (invokeO(i, 0) and invokeO(i, 1) and invokeO(i,2))
+                if (isFull)
+                    return isFull
             }
             return isFull
         }
-
     }
 
     object Column : Cells() {

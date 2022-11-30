@@ -15,16 +15,11 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.example.tictactoe.logic.ComputerPlayer
 import com.example.tictactoe.GameApplication
-import com.example.tictactoe.logic.HumanPlayer
 import com.example.tictactoe.R
 import com.example.tictactoe.database.GameState
 import com.example.tictactoe.databinding.FragmentBoardBinding
-import com.example.tictactoe.logic.Board
-import com.example.tictactoe.logic.ConnectivityUtils
-import com.example.tictactoe.logic.RetrofitHelper
-import com.example.tictactoe.logic.SuggesterApi
+import com.example.tictactoe.logic.*
 import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -34,7 +29,7 @@ import kotlinx.coroutines.launch
 class BoardFragment : Fragment() {
 
 
-
+    val playerBuilder = PlayerBuilder()
     private var progressBar: ProgressBar? = null
     private val handler = Handler()
     lateinit var bindingBoard: FragmentBoardBinding
@@ -74,8 +69,9 @@ class BoardFragment : Fragment() {
             "1" -> { //human player
                 Log.i("Board frag", "human player")
 
-                //boardFragmentViewModel.gameType = 1
-                boardFragmentViewModel.playerO = HumanPlayer()
+                boardFragmentViewModel.gameType = 1
+
+                boardFragmentViewModel.playerO = playerBuilder.build("human")
                 (boardFragmentViewModel.playerO as HumanPlayer).sign = "O"
 
                 Log.i("Board frag", "playerO sign has set")
@@ -84,8 +80,8 @@ class BoardFragment : Fragment() {
 
 
             "2" -> { //ai player
-                //boardFragmentViewModel.gameType = 2
-                boardFragmentViewModel.playerO = ComputerPlayer()
+                boardFragmentViewModel.gameType = 2
+                boardFragmentViewModel.playerO = playerBuilder.build("AI")
                 (boardFragmentViewModel.playerO as ComputerPlayer).sign = "O"
                 Log.i("Board frag", "playerO sign has set")
                 Log.i("Board frag", "playerX sign is now: ${boardFragmentViewModel.playerX.sign}")
@@ -142,7 +138,6 @@ class BoardFragment : Fragment() {
         val spot = convertCellToSpots(cellButton)
         val x = spot[0]
         val y = spot[1]
-
         boardFragmentViewModel.buttonClicked(x, y)
     }
 
@@ -178,6 +173,7 @@ class BoardFragment : Fragment() {
         if(!boardFragmentViewModel.gameState.value?.isGameOver!!) {
             //setTurnLabel(gameState.nextTurn)
             setGridUI(gameState.gridState, gameState)
+            Log.i("setUIBYSTATE", "grid state is ${gameState.gridState}")
         }
         else {
             endGame()

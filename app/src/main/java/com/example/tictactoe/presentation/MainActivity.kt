@@ -1,36 +1,61 @@
 package com.example.tictactoe.presentation
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import com.example.tictactoe.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainContract.View {
 
+    private var mvpFactory = MainActivityMVPFactory()
+
+    private var presenter: MainContract.Presenter? = null
+    private lateinit var humanPlayerButton: Button
+    private lateinit var aiPlayerButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createPresenterAndModel()
         setContentView(R.layout.activity_main)
 
-//        val suggesterApi = RetrofitHelper.getInstance().create(SuggesterApi::class.java)
-//        GlobalScope.launch {
-//            val result = suggesterApi.getBestMove()
-//            if (result != null)
-//                Log.d("ayush: ", result.body().toString())
-//        }
+        humanPlayerButton = findViewById(R.id.human_player)
+        aiPlayerButton = findViewById(R.id.AI_player)
 
-        val humanPlayerButtonClick = findViewById<Button>(R.id.human_player)
-        val aiPlayerButtonClick = findViewById<Button>(R.id.AI_player)
-        humanPlayerButtonClick.setOnClickListener {
-            val intent = Intent(this, GameActivity::class.java)
-            intent.putExtra("player type", 1)
+        humanPlayerButton.setOnClickListener {
+            val intent = presenter?.playerVSPlayerButtonClicked( this)
             startActivity(intent)
         }
-        aiPlayerButtonClick.setOnClickListener{
-            val intent = Intent(this, GameActivity::class.java)
-            intent.putExtra("player type", 2)
+
+        aiPlayerButton.setOnClickListener{
+            val intent = presenter?.playerVSAIButtonClicked(this)
             startActivity(intent)
         }
+    }
+
+    private fun createPresenterAndModel(){
+        presenter = mvpFactory.createViewAndPresenter(this)
+        mvpFactory.createModel()
+    }
+
+    override fun setPlayerVsPlayerButtonText(text: String) {
+        humanPlayerButton.text = "test"
+    }
+
+    override fun setPlayerVsAiButtonText(text: String) {
+        humanPlayerButton.text = "test1"
+    }
+
+    override fun setPlayerVsPlayerButtonTextColor(color: Int){
+        humanPlayerButton.setTextColor(color)
+    }
+    override fun setPlayerVsAiButtonTextColor(color: Int){
+        aiPlayerButton.setTextColor(color)
+    }
+    override fun setPlayerVsPlayerButtonColor(color: Int){
+        humanPlayerButton.setBackgroundColor(color)
+    }
+    override fun setPlayerVsAiButtonColor(color: Int){
+        aiPlayerButton.setBackgroundColor(color)
+
     }
 }

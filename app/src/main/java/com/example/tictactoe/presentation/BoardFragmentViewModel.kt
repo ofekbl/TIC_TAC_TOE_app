@@ -29,7 +29,7 @@ class BoardFragmentViewModel(private val repository: GameRepository): ViewModel(
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
      */
-    fun insert(gameState: GameState) = viewModelScope.launch {
+    private fun insert(gameState: GameState) = viewModelScope.launch {
         repository.insert(gameState)
     }
 

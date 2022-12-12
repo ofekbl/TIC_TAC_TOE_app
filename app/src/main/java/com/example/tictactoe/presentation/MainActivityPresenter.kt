@@ -1,27 +1,33 @@
 package com.example.tictactoe.presentation
+
+import com.example.tictactoe.Consts
+
 class MainActivityPresenter : MainContract.Presenter {
 
     private var view: MainContract.View? = null
     private val model = MainActivityModel()
 
-    override fun setMainView(view: MainContract.View) {
+    fun setMainView(view: MainContract.View) {
         this.view = view
     }
 
     override fun playerVSPlayerButtonClicked() {
-       view?.openGameActivity("player type", 1)
+        view?.openGameActivity(Consts.HUMAN_PLAYER_TYPE)
     }
 
     override fun playerVSAIButtonClicked() {
-        view?.openGameActivity("player type", 2)
+        view?.openGameActivity(Consts.AI_PLAYER_TYPE)
     }
 
     override fun viewCreated() {
-        view?.setPlayerVsAiButtonText(model.buttonText)
-        view?.setPlayerVsAiButtonColor(model.buttonColor)
-        view?.setPlayerVsAiButtonTextColor(model.buttonTextColor)
-        view?.setPlayerVsPlayerButtonText(model.buttonText)
-        view?.setPlayerVsPlayerButtonColor(model.buttonColor)
-        view?.setPlayerVsPlayerButtonTextColor(model.buttonTextColor)
+        view?.apply {
+            setPlayerVsAiButtonText(model.buttonTextAI)
+            setPlayerVsAiButtonColor(model.buttonColorAI)
+            setPlayerVsAiButtonTextColor(model.buttonTextColorAI)
+            setPlayerVsPlayerButtonText(model.buttonTextHuman)
+            setPlayerVsPlayerButtonColor(model.buttonColorHuman)
+            setPlayerVsPlayerButtonTextColor(model.buttonTextColorHuman)
+            setLastPlayedText(model.lastPlayed)
+        }
     }
 }

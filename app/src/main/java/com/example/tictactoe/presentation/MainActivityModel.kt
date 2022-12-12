@@ -1,8 +1,14 @@
 package com.example.tictactoe.presentation
 
+import android.graphics.Color
 
-class MainActivityModel : MainContract.Model {
-    override var buttonText = ""
-    override var buttonColor = 0
-    override var buttonTextColor = 0
-}
+
+data class MainActivityModel(
+    override var buttonTextAI: String = "Play vs AI Player",
+    override var buttonColorAI : Int = Color.BLACK,
+    override var buttonTextColorAI : Int = Color.MAGENTA,
+    override var buttonTextHuman: String = "Play vs Human Player",
+    override var buttonColorHuman : Int = Color.BLACK,
+    override var buttonTextColorHuman : Int = Color.MAGENTA,
+    override var lastPlayed : String = "11111111111"
+) : MainContract.Model

@@ -1,14 +1,15 @@
 package com.example.tictactoe.presentation
 
-import android.content.Context
-import android.content.Intent
-
 interface MainContract {
 
     interface Model{
-        var buttonText : String
-        var buttonColor : Int
-        var buttonTextColor : Int
+        var buttonTextAI: String
+        var buttonColorAI : Int
+        var buttonTextColorAI : Int
+        var buttonTextHuman: String
+        var buttonColorHuman : Int
+        var buttonTextColorHuman : Int
+        var lastPlayed: String
     }
 
     interface View {
@@ -18,11 +19,11 @@ interface MainContract {
         fun setPlayerVsAiButtonTextColor(color: Int)
         fun setPlayerVsPlayerButtonColor(color: Int)
         fun setPlayerVsAiButtonColor(color: Int)
-        fun openGameActivity(name: String, value: Int)
+        fun openGameActivity(value: Int)
+        fun setLastPlayedText(date: String)
     }
 
     interface Presenter {
-        fun setMainView(view: View)
         fun viewCreated()
         fun playerVSPlayerButtonClicked()
         fun playerVSAIButtonClicked()

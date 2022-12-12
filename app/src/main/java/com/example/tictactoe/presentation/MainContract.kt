@@ -18,14 +18,13 @@ interface MainContract {
         fun setPlayerVsAiButtonTextColor(color: Int)
         fun setPlayerVsPlayerButtonColor(color: Int)
         fun setPlayerVsAiButtonColor(color: Int)
-
+        fun openGameActivity(name: String, value: Int)
     }
 
     interface Presenter {
         fun setMainView(view: View)
-        fun playerVSPlayerButtonClicked(context: Context): Intent
-        fun playerVSAIButtonClicked(context: Context): Intent
-        fun setPLayerVSAiButton(textColor: Int, buttonColor: Int, buttonText: String)
-        fun setPLayerVSPlayerButton(textColor: Int, buttonColor: Int, buttonText: String)
+        fun viewCreated()
+        fun playerVSPlayerButtonClicked()
+        fun playerVSAIButtonClicked()
     }
 }

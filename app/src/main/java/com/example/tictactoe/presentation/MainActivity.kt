@@ -1,5 +1,6 @@
 package com.example.tictactoe.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -22,13 +23,11 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         aiPlayerButton = findViewById(R.id.AI_player)
 
         humanPlayerButton.setOnClickListener {
-            val intent = presenter?.playerVSPlayerButtonClicked( this)
-            startActivity(intent)
+        presenter?.playerVSPlayerButtonClicked()
         }
 
         aiPlayerButton.setOnClickListener{
-            val intent = presenter?.playerVSAIButtonClicked(this)
-            startActivity(intent)
+        presenter?.playerVSAIButtonClicked()
         }
     }
 
@@ -57,5 +56,11 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     override fun setPlayerVsAiButtonColor(color: Int){
         aiPlayerButton.setBackgroundColor(color)
 
+    }
+
+    override fun openGameActivity(name: String, value: Int) {
+        val intent = Intent(this, GameActivity::class.java)
+        intent.putExtra("player type", 1)
+        startActivity(intent)
     }
 }

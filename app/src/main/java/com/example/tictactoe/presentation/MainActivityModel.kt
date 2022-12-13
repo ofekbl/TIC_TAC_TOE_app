@@ -10,5 +10,5 @@ data class MainActivityModel(
     override var buttonTextHuman: String = "Play vs Human Player",
     override var buttonColorHuman : Int = Color.BLACK,
     override var buttonTextColorHuman : Int = Color.MAGENTA,
-    override var lastPlayed : String = "11111111111"
+    override var lastPlayed : String = ""
 ) : MainContract.Model

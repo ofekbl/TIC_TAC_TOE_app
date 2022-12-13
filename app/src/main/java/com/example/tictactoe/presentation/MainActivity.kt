@@ -42,20 +42,23 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         humanPlayerButton?.setOnClickListener {
             presenter?.playerVSPlayerButtonClicked()
             editor?.putString(Consts.LAST_PLAYED_TIME, LocalDate.now().toString())
+            editor?.apply()
             Log.i("Human button clicked", LocalDate.now().toString())
         }
 
         aiPlayerButton?.setOnClickListener {
             presenter?.playerVSAIButtonClicked()
             editor?.putString(Consts.LAST_PLAYED_TIME, LocalDate.now().toString())
+            editor?.apply()
+
             Log.i("AI button clicked", LocalDate.now().toString())
         }
         presenter?.viewCreated()
     }
 
     private fun createPresenterAndModel() {
-        presenter = mvpFactory?.createViewAndPresenter(this)
-        mvpFactory?.createModel()
+        mvpFactory?.createComponents(this)
+        this.presenter = mvpFactory?.presenter
     }
 
     override fun setPlayerVsPlayerButtonText(text: String) {

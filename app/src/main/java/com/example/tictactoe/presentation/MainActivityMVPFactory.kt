@@ -9,16 +9,23 @@ class MainActivityMVPFactory(private val sharedPreferences: SharedPreferences?) 
     var presenter : MainActivityPresenter? = null
     var model : MainActivityModel? = null
 
+    fun createComponents(view: MainContract.View) {
+        presenter = MainActivityPresenter()
+        presenter!!.setMainView(view)
+        presenter?.setMainModel(createModel())
+    }
+
     fun createViewAndPresenter(view: MainContract.View) : MainContract.Presenter {
         presenter = MainActivityPresenter()
         presenter!!.setMainView(view)
         return presenter as MainActivityPresenter
     }
 
-    fun createModel(){
-        val lastPlayedText = sharedPreferences?.getString(Consts.LAST_PLAYED_TIME, "12-13-22")
+    private fun createModel() : MainContract.Model {
+        val lastPlayedText = sharedPreferences?.getString(Consts.LAST_PLAYED_TIME, "default value")
         model = MainActivityModel(lastPlayed = lastPlayedText!!)
+        presenter?.setMainModel(model)
         Log.i("CreateModel", "last played time from sharedPrefs is $lastPlayedText")
-
+        return model as MainActivityModel
     }
 }

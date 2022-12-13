@@ -46,6 +46,7 @@ abstract class GameDatabase : RoomDatabase() {
                 }
             }
         }
+
         suspend fun populateDatabase(gameDao: GamedatabaseDao) {
             // Delete all content here.
             gameDao.clear()

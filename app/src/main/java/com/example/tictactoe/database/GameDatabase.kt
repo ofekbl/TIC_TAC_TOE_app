@@ -37,6 +37,7 @@ abstract class GameDatabase : RoomDatabase() {
     }
 
 
+
     private class GameDatabaseCallback(private val scope: CoroutineScope) : RoomDatabase.Callback(){
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
